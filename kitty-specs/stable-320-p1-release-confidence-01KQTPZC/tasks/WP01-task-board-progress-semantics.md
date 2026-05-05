@@ -25,8 +25,8 @@ subtasks:
 - T004
 - T005
 - T006
-agent: codex
-shell_pid: '87063'
+agent: "codex:gpt-5:python-pedro:implementer"
+shell_pid: "87063"
 history: []
 agent_profile: python-pedro
 authoritative_surface: src/specify_cli/
@@ -174,3 +174,7 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 ## Reviewer Guidance
 
 Reviewers should focus on semantic clarity, JSON compatibility, and whether tests cover the exact #966 repro shape. Confirm no unrelated status lifecycle changes were introduced.
+
+## Activity Log
+
+- 2026-05-05T00:36:58Z – codex:gpt-5:python-pedro:implementer – shell_pid=87063 – Assigned agent via action command
