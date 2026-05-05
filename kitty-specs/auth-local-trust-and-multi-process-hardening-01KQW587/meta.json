@@ -8,5 +8,7 @@
   "purpose_context": "This mission closes remaining CLI auth-adjacent trust gaps after the shipped browser/device OAuth work: logged-out Teamspace guidance, direct-ingress error classification, broad-exception guardrails, hosted-env-safe refresh-lock tests, and a durable encrypted-file-rooted local session hot-path design.",
   "purpose_tldr": "Make CLI hosted-auth and tracker-bound workflows fail truthfully, test hermetically, and behave reliably under local multi-process use.",
   "slug": "auth-local-trust-and-multi-process-hardening-01KQW587",
-  "target_branch": "main"
+  "source_description": "CLI auth-adjacent trust, diagnostics, and local multi-process hardening from workspace start-here.md. Scope covers CLI #829, #907, #889, #977, and the CLI side of SaaS #77 without reopening shipped Tranche 2 or Tranche 2.5 auth.",
+  "target_branch": "main",
+  "vcs": "git"
 }
