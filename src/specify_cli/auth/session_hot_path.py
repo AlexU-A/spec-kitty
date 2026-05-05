@@ -97,6 +97,10 @@ def load_session_hot_path(store_dir: Path) -> SessionHotPathSummary | None:
         )
     except (TypeError, ValueError):
         return None
+    if refresh_expires_at is not None:
+        if refresh_expires_at.tzinfo is None:
+            return None
+        refresh_expires_at = refresh_expires_at.astimezone(UTC)
     return SessionHotPathSummary(
         refresh_token_expires_at=refresh_expires_at,
         not_after_monotonic=time.monotonic()

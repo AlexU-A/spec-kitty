@@ -35,6 +35,20 @@ def test_scoped_ble001_with_missing_reason_fails(tmp_path: Path) -> None:
     assert "specific safety reason" in finding.remediation
 
 
+def test_scoped_plain_broad_exception_without_noqa_fails(tmp_path: Path) -> None:
+    repo_root = tmp_path / "repo"
+    path = repo_root / "src/specify_cli/auth/http/transport.py"
+    line = "except Exception as exc:"
+
+    finding = audit_auth_storage_ble001_line(path, 19, line, repo_root=repo_root)
+
+    assert finding is not None
+    assert finding.file == str(path)
+    assert finding.line == 19
+    assert finding.reason == ""
+    assert "specific safety reason" in finding.remediation
+
+
 def test_scoped_ble001_with_generic_reason_fails(tmp_path: Path) -> None:
     repo_root = tmp_path / "repo"
     path = repo_root / "src/specify_cli/cli/commands/_auth_logout.py"

@@ -59,6 +59,11 @@ from specify_cli.task_utils import TaskCliError, find_repo_root
 
 _IDENTIFIER_CHARCLASS = r"\w"
 _BLE001_NOQA_RE = re.compile(r"#\s*noqa:\s*(?P<body>[^#]*)", re.IGNORECASE)
+_BROAD_EXCEPTION_HANDLER_RE = re.compile(
+    r"^\s*except\s+"
+    r"(?:Exception(?:\s+as\s+\w+)?|\([^#\n]*\bException\b[^#\n]*\)(?:\s+as\s+\w+)?)"
+    r"\s*:"
+)
 _AUTH_STORAGE_BLE001_COMMAND_FILES = frozenset(
     {
         "src/specify_cli/cli/commands/auth.py",
@@ -158,6 +163,10 @@ def _ble001_reason_from_line(line_text: str) -> str | None:
     return re.sub(r"^\s*[-–—:]+\s*", "", after).strip()
 
 
+def _is_broad_exception_handler(line_text: str) -> bool:
+    return _BROAD_EXCEPTION_HANDLER_RE.search(line_text) is not None
+
+
 def _is_generic_ble001_reason(reason: str) -> bool:
     normalized = re.sub(r"[\W_]+", " ", reason.casefold()).strip()
     normalized = re.sub(r"\s+", " ", normalized)
@@ -176,7 +185,11 @@ def audit_auth_storage_ble001_line(
         return None
 
     reason = _ble001_reason_from_line(line_text)
-    if reason is None or not _is_generic_ble001_reason(reason):
+    if reason is None:
+        if not _is_broad_exception_handler(line_text):
+            return None
+        reason = ""
+    elif not _is_generic_ble001_reason(reason):
         return None
 
     return Ble001SuppressionFinding(

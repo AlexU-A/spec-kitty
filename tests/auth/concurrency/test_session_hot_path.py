@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import sys
 import time
 import types
@@ -79,11 +80,18 @@ def _new_process_auth_check(store_dir: Path) -> bool:
     return tm.is_authenticated
 
 
-def test_many_short_lived_auth_checks_reduce_baseline_8_durable_reads(
+def _new_process_load_only(store_dir: Path) -> bool:
+    storage = _CountingFastFileStorage(base_dir=store_dir)
+    tm = TokenManager(storage)
+    tm.load_from_storage_sync()
+    return tm._session is None and tm._hot_path_summary is not None
+
+
+def test_many_short_lived_loads_defer_baseline_8_durable_reads(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    """Baseline 8 process-start checks read storage 8 times; hot path reads 0."""
+    """Baseline 8 process-start loads read storage 8 times; hot path reads 0."""
     process_count = 8
     store_dir = tmp_path / "auth"
     storage = _CountingFastFileStorage(base_dir=store_dir)
@@ -95,17 +103,55 @@ def test_many_short_lived_auth_checks_reduce_baseline_8_durable_reads(
     baseline_durable_reads = _CountingFastFileStorage.durable_read_count
 
     assert baseline_durable_reads == 8, (
-        "Mandatory baseline: before the hot path, each short-lived auth check "
+        "Mandatory baseline: before the hot path, each short-lived session load "
         "performs one encrypted durable session read."
     )
 
     monkeypatch.delenv("SPEC_KITTY_DISABLE_SESSION_HOT_PATH", raising=False)
     _reset_read_count()
-    assert all(_new_process_auth_check(store_dir) for _ in range(process_count))
+    assert all(_new_process_load_only(store_dir) for _ in range(process_count))
     hot_path_durable_reads = _CountingFastFileStorage.durable_read_count
 
     assert hot_path_durable_reads == 0
     assert hot_path_durable_reads < baseline_durable_reads
+
+
+def test_is_authenticated_materializes_fresh_summary_before_true(
+    tmp_path: Path,
+) -> None:
+    store_dir = tmp_path / "auth"
+    storage = _CountingFastFileStorage(base_dir=store_dir)
+    storage.write(_make_session())
+
+    _reset_read_count()
+    tm = TokenManager(storage)
+    tm.load_from_storage_sync()
+    assert tm._session is None
+    assert tm._hot_path_summary is not None
+    assert _CountingFastFileStorage.durable_read_count == 0
+
+    assert tm.is_authenticated is True
+
+    assert tm.get_current_session() is not None
+    assert _CountingFastFileStorage.durable_read_count == 1
+
+
+def test_deleted_durable_session_after_summary_is_not_authenticated(
+    tmp_path: Path,
+) -> None:
+    store_dir = tmp_path / "auth"
+    storage = _CountingFastFileStorage(base_dir=store_dir)
+    storage.write(_make_session())
+
+    tm = TokenManager(storage)
+    tm.load_from_storage_sync()
+    assert tm._session is None
+    assert tm._hot_path_summary is not None
+
+    storage.delete()
+
+    assert tm.is_authenticated is False
+    assert tm.get_current_session() is None
 
 
 def test_missing_handoff_falls_back_to_encrypted_storage(tmp_path: Path) -> None:
@@ -176,6 +222,27 @@ def test_durable_fingerprint_oserror_is_hot_path_miss(
         session_hot_path,
         "_durable_fingerprint",
         raise_deleted_durable_file,
+    )
+
+    assert load_session_hot_path(store_dir) is None
+
+
+def test_naive_refresh_expiry_is_hot_path_miss(tmp_path: Path) -> None:
+    store_dir = tmp_path / "auth"
+    storage = _CountingFastFileStorage(base_dir=store_dir)
+    storage.write(_make_session())
+    payload = {
+        "schema_version": 1,
+        "generated_at": time.time(),
+        "max_age_seconds": 30,
+        "durable_fingerprint": session_hot_path._durable_fingerprint(
+            store_dir / "session.json"
+        ),
+        "refresh_token_expires_at": "2026-01-01T00:00:00",
+    }
+    handoff_path_for_store(store_dir).write_text(
+        json.dumps(payload),
+        encoding="utf-8",
     )
 
     assert load_session_hot_path(store_dir) is None

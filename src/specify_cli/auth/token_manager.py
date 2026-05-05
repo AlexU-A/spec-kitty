@@ -192,8 +192,6 @@ class TokenManager:
         """
         if self._session is None:
             if self._hot_path_summary is not None:
-                if self._hot_path_summary.is_authenticated():
-                    return True
                 self._materialize_session_from_storage_sync()
             if self._session is None:
                 return False
