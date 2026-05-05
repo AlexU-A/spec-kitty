@@ -8,11 +8,11 @@
 
 | ID | Description | Work Package | Parallel |
 |---|---|---|---|
-| T001 | Inventory hosted-sync and tracker-bound diagnostic entry points | WP01 | [P] |
-| T002 | Define classification mapping for unauthenticated, Private Teamspace, transport, and server failures | WP01 | [P] |
-| T003 | Fix direct-ingress missing Private Teamspace classification for #889 | WP01 |  |
-| T004 | Add logged-out Teamspace/tracker guidance for #829 | WP01 |  |
-| T005 | Add diagnostic regression tests and verify focused sync/tracker slices | WP01 |  |
+| T001 | Inventory hosted-sync and tracker-bound diagnostic entry points | WP01 | [P] | [D] |
+| T002 | Define classification mapping for unauthenticated, Private Teamspace, transport, and server failures | WP01 | [D] |
+| T003 | Fix direct-ingress missing Private Teamspace classification for #889 | WP01 |  | [D] |
+| T004 | Add logged-out Teamspace/tracker guidance for #829 | WP01 |  | [D] |
+| T005 | Add diagnostic regression tests and verify focused sync/tracker slices | WP01 |  | [D] |
 | T006 | Reproduce the hosted-URL-set refresh-lock isolation boundary without live network dependency | WP02 | [D] |
 | T007 | Make machine refresh-lock fixtures hermetic for post-refresh membership rehydrate | WP02 |  | [D] |
 | T008 | Add a no-hosted-/me regression guard for #977 | WP02 |  | [D] |
@@ -43,11 +43,11 @@
 **Goal**: Make hosted-sync and tracker-bound command paths distinguish logged-out, missing Private Teamspace, retryable transport, and true server failures.
 **Independent test**: Simulate logged-out Teamspace/tracker-bound workflows and missing Private Teamspace direct ingress; assert no generic `server_error` in those cases.
 
-- [ ] T001 Inventory hosted-sync and tracker-bound diagnostic entry points (WP01)
-- [ ] T002 Define classification mapping for unauthenticated, Private Teamspace, transport, and server failures (WP01)
-- [ ] T003 Fix direct-ingress missing Private Teamspace classification for #889 (WP01)
-- [ ] T004 Add logged-out Teamspace/tracker guidance for #829 (WP01)
-- [ ] T005 Add diagnostic regression tests and verify focused sync/tracker slices (WP01)
+- [x] T001 Inventory hosted-sync and tracker-bound diagnostic entry points (WP01)
+- [x] T002 Define classification mapping for unauthenticated, Private Teamspace, transport, and server failures (WP01)
+- [x] T003 Fix direct-ingress missing Private Teamspace classification for #889 (WP01)
+- [x] T004 Add logged-out Teamspace/tracker guidance for #829 (WP01)
+- [x] T005 Add diagnostic regression tests and verify focused sync/tracker slices (WP01)
 
 **Implementation notes**:
 - Start from `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/diagnostic-classification.md`.
