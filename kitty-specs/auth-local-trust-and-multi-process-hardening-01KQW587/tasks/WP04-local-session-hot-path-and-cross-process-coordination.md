@@ -229,3 +229,4 @@ Include enough measurement context that reviewers can distinguish a real hot-pat
 - 2026-05-05T15:10:52Z – codex:gpt-5:python-pedro:implementer – shell_pid=8897 – Ready for review: auth concurrency refresh fixtures are hermetic and broader concurrency suite passes.
 - 2026-05-05T15:11:51Z – codex:gpt-5:python-pedro:reviewer – shell_pid=12682 – Started review via action command
 - 2026-05-05T15:15:09Z – codex:gpt-5:python-pedro:reviewer – shell_pid=12682 – Review passed: concurrency suite 22 passed; hot-path matrix 12 passed/2 skipped; BLE001 guard 5 passed; fixtures fail fast on hosted /api/v1/me
+- 2026-05-05T15:37:36Z – codex:gpt-5:python-pedro:reviewer – shell_pid=12682 – Moved to planned
