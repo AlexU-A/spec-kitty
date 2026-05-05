@@ -1,19 +1,19 @@
 {
-  "event_count": 18,
-  "last_event_id": "01KQTTF6GZ6MR8KKJ8N1V55Z01",
-  "materialized_at": "2026-05-05T01:01:35.135042+00:00",
+  "event_count": 19,
+  "last_event_id": "01KQTTGW70ZMZW3C1CBQ8FPDES",
+  "materialized_at": "2026-05-05T01:02:30.112338+00:00",
   "mission_number": "",
   "mission_slug": "stable-320-p1-release-confidence-01KQTPZC",
   "mission_type": "software-dev",
   "summary": {
-    "approved": 2,
+    "approved": 3,
     "blocked": 0,
     "canceled": 0,
     "claimed": 0,
     "done": 0,
     "for_review": 0,
     "in_progress": 0,
-    "in_review": 1,
+    "in_review": 0,
     "planned": 1
   },
   "work_packages": {
@@ -32,11 +32,11 @@
       "last_transition_at": "2026-05-05T00:52:14.186608+00:00"
     },
     "WP03": {
-      "actor": "codex:gpt-5:python-pedro:reviewer",
+      "actor": "user",
       "force_count": 1,
-      "lane": "in_review",
-      "last_event_id": "01KQTTF6GZ6MR8KKJ8N1V55Z01",
-      "last_transition_at": "2026-05-05T01:01:35.135042+00:00"
+      "lane": "approved",
+      "last_event_id": "01KQTTGW70ZMZW3C1CBQ8FPDES",
+      "last_transition_at": "2026-05-05T01:02:30.112338+00:00"
     },
     "WP04": {
       "actor": "finalize-tasks",
