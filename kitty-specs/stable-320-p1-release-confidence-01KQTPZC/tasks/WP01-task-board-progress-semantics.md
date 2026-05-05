@@ -178,3 +178,4 @@ Reviewers should focus on semantic clarity, JSON compatibility, and whether test
 ## Activity Log
 
 - 2026-05-05T00:36:58Z – codex:gpt-5:python-pedro:implementer – shell_pid=87063 – Assigned agent via action command
+- 2026-05-05T00:47:20Z – codex:gpt-5:python-pedro:implementer – shell_pid=87063 – Ready for review: progress semantics clarified; focused tests, ruff, and progress mypy passed

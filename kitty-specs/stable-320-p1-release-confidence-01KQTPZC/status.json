@@ -1,7 +1,7 @@
 {
-  "event_count": 9,
-  "last_event_id": "01KQTSHY5VC5E1MPQHJW889D96",
-  "materialized_at": "2026-05-05T00:45:36.315817+00:00",
+  "event_count": 10,
+  "last_event_id": "01KQTSN3FV5K2SSPY3KNWZAC54",
+  "materialized_at": "2026-05-05T00:47:20.059104+00:00",
   "mission_number": "",
   "mission_slug": "stable-320-p1-release-confidence-01KQTPZC",
   "mission_type": "software-dev",
@@ -11,18 +11,18 @@
     "canceled": 0,
     "claimed": 0,
     "done": 0,
-    "for_review": 1,
-    "in_progress": 1,
+    "for_review": 2,
+    "in_progress": 0,
     "in_review": 0,
     "planned": 2
   },
   "work_packages": {
     "WP01": {
-      "actor": "codex:gpt-5:python-pedro:implementer",
+      "actor": "user",
       "force_count": 1,
-      "lane": "in_progress",
-      "last_event_id": "01KQTS232R6S272XW20VRDAQWZ",
-      "last_transition_at": "2026-05-05T00:36:57.048623+00:00"
+      "lane": "for_review",
+      "last_event_id": "01KQTSN3FV5K2SSPY3KNWZAC54",
+      "last_transition_at": "2026-05-05T00:47:20.059104+00:00"
     },
     "WP02": {
       "actor": "user",
