@@ -25,7 +25,7 @@ subtasks:
 - T016
 - T017
 - T018
-agent: codex
+agent: "codex:gpt-5:python-pedro:implementer"
 history: []
 agent_profile: python-pedro
 authoritative_surface: kitty-specs/stable-320-p1-release-confidence-01KQTPZC/
@@ -36,6 +36,7 @@ owned_files:
 - kitty-specs/stable-320-p1-release-confidence-01KQTPZC/smoke-artifacts/**
 role: implementer
 tags: []
+shell_pid: "957"
 ---
 
 # Work Package Prompt: WP03 - Fresh Workflow Smoke Evidence
@@ -174,3 +175,7 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 ## Reviewer Guidance
 
 Reviewers should check that the local-only smoke truly avoids hosted dependencies, that the SaaS-enabled smoke mirrors the lifecycle where practical, and that every hosted/sync command uses `SPEC_KITTY_ENABLE_SAAS_SYNC=1`. Reject evidence that only runs status/help/auth probes and claims full SaaS smoke success.
+
+## Activity Log
+
+- 2026-05-05T00:52:56Z – codex:gpt-5:python-pedro:implementer – shell_pid=957 – Started implementation via action command
