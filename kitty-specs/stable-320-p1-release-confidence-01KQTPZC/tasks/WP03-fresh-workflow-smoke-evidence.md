@@ -25,7 +25,7 @@ subtasks:
 - T016
 - T017
 - T018
-agent: "codex:gpt-5:python-pedro:implementer"
+agent: "codex:gpt-5:python-pedro:reviewer"
 history: []
 agent_profile: python-pedro
 authoritative_surface: kitty-specs/stable-320-p1-release-confidence-01KQTPZC/
@@ -36,7 +36,7 @@ owned_files:
 - kitty-specs/stable-320-p1-release-confidence-01KQTPZC/smoke-artifacts/**
 role: implementer
 tags: []
-shell_pid: "957"
+shell_pid: "10130"
 ---
 
 # Work Package Prompt: WP03 - Fresh Workflow Smoke Evidence
@@ -180,3 +180,4 @@ Reviewers should check that the local-only smoke truly avoids hosted dependencie
 
 - 2026-05-05T00:52:56Z – codex:gpt-5:python-pedro:implementer – shell_pid=957 – Started implementation via action command
 - 2026-05-05T01:01:16Z – codex:gpt-5:python-pedro:implementer – shell_pid=957 – Ready for review: local and SaaS-enabled lifecycle smoke evidence recorded
+- 2026-05-05T01:01:35Z – codex:gpt-5:python-pedro:reviewer – shell_pid=10130 – Started review via action command
