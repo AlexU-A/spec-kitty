@@ -170,3 +170,4 @@ Reviewers should verify that evidence is concrete, current, and scoped. Check th
 ## Activity Log
 
 - 2026-05-05T01:02:50Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Started implementation via action command
+- 2026-05-05T01:04:37Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Ready for review: release evidence, deferrals, and issue closure notes compiled
