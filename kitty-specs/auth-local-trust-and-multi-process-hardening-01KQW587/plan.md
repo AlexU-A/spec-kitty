@@ -162,8 +162,6 @@ Tests:
 
 Owner surface:
 
-- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/auth/token_manager.py`
-- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/auth/refresh_transaction.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/tests/auth/concurrency/test_machine_refresh_lock.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/tests/auth/concurrency/conftest.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/tests/auth/test_token_manager.py`
@@ -175,6 +173,7 @@ Plan:
 - Make fake refreshed sessions in the concurrency tests include a Private Teamspace or explicitly patch the post-refresh membership hook when membership rehydrate is outside the test purpose.
 - Add a failing guard that proves the concurrency test does not call hosted `/api/v1/me` under configured hosted URL.
 - Preserve existing post-refresh membership rehydrate behavior for production and targeted token-manager tests.
+- Treat production auth files as read-only reference for this WP; production token-manager or refresh-transaction changes belong to WP04 if later proven necessary.
 
 Tests:
 
@@ -186,12 +185,14 @@ Tests:
 
 Owner surface:
 
-- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/auth/`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/cli/commands/auth.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/cli/commands/_auth_doctor.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/cli/commands/_auth_login.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/cli/commands/_auth_logout.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/cli/commands/_auth_status.py`
+- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/auth/flows/revoke.py`
+- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/auth/transport.py`
+- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/auth/http/transport.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/src/specify_cli/cli/commands/review.py`
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/tests/review/`
 
@@ -201,7 +202,8 @@ Plan:
 - Reuse or extract the existing BLE001 audit from review tooling so it can be tested without running an entire mission review.
 - Require a specific inline reason after `noqa: BLE001`; reject empty reasons and generic text such as "ignore" or "broad catch".
 - Extend tests so one justified suppression passes and one unjustified suppression fails with file and line.
-- Clean up any existing auth/storage suppressions that fail the new standard.
+- Clean up existing scoped suppressions in WP03-owned auth command and auth transport/revoke files that fail the new standard.
+- Leave suppressions in WP04-owned auth hot-path files to WP04, which depends on WP03 and must run the guard after its auth edits.
 
 Tests:
 
@@ -223,10 +225,12 @@ Owner surface:
 Plan:
 
 - Measure or characterize the repeated expensive session work across many short-lived processes before changing behavior.
+- Make that characterization mandatory: record a baseline and prove the final representative many-process scenario performs fewer repeated durable-session operations than the baseline.
 - Design a minimal local handoff/cache that is invalidated by durable session changes, never replaces encrypted file-only storage, and does not expose raw tokens in output.
 - Keep refresh coordination under the existing machine-wide lock semantics unless there is concrete evidence that a new lock boundary is needed.
 - Preserve benign replay and stale-grant handling from existing auth concurrency behavior.
 - Add packaging/dependency regression coverage proving no Keychain/keyring/Secret Service dependency appears.
+- Run the WP03 BLE001 guard after auth edits and clean up any scoped suppressions in WP04-owned auth files before review.
 
 Tests:
 
@@ -258,12 +262,12 @@ WP03 BLE001 Guardrail
   \       |       /
    \      |      /
     \     |     /
-     WP04 Local Session Hot Path
+     WP04 Local Session Hot Path (depends on WP02 and WP03)
           |
         WP05 Integrated Evidence And Smoke
 ```
 
-WP01, WP02, and WP03 can start independently. WP04 should start after WP02's test isolation boundary is clear because it touches the same auth concurrency surface. WP05 waits for all implementation WPs.
+WP01, WP02, and WP03 can start independently. WP04 starts after WP02's test isolation boundary and WP03's guardrail are clear because it touches auth concurrency/storage files that must satisfy the new guard. WP05 waits for all implementation WPs.
 
 ## Key Design Decisions
 
