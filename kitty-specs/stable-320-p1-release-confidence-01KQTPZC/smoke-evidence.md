@@ -1,7 +1,10 @@
 # Fresh Workflow Smoke Evidence
 
 WP03 ran two disposable lifecycle smokes for Spec Kitty CLI `3.2.0a10` on
-2026-05-05. Workspaces were created outside the mission artifact directory:
+2026-05-05. The version was confirmed from the mission repo with
+`uv run spec-kitty --version`, which printed
+`spec-kitty-cli version 3.2.0a10`. Workspaces were created outside the mission
+artifact directory:
 
 - Local-only: `/private/tmp/spec-kitty-smoke-20260505T0053/local-smoke`
 - SaaS-enabled: `/private/tmp/spec-kitty-smoke-20260505T0053/saas-smoke`
@@ -26,7 +29,7 @@ surfaces.
 
 | Step | Command | Exit | Evidence |
 | --- | --- | ---: | --- |
-| Version | `.venv/bin/spec-kitty --version` | 0 | `spec-kitty-cli version 3.2.0a10` |
+| Version | `uv run spec-kitty --version` | 0 | `spec-kitty-cli version 3.2.0a10` |
 | Setup | `git init -b main`; `.venv/bin/spec-kitty init --ai codex --non-interactive` | 0 | Project ready; Codex command skills installed. |
 | Specify | `.venv/bin/spec-kitty specify local-smoke-mission --mission-type software-dev --json` | 0 | Created `local-smoke-mission-01KQTT1A`. |
 | Plan prerequisite | Populate and commit substantive `spec.md` | 0 | `docs: add smoke specification` committed. |
