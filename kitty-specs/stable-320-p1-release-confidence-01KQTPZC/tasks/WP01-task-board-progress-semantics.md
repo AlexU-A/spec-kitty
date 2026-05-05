@@ -34,6 +34,7 @@ owned_files:
 - src/specify_cli/status/progress.py
 - tests/specify_cli/status/test_progress.py
 - tests/specify_cli/status/test_progress_integration.py
+- tests/specify_cli/agent_utils/test_status.py
 - tests/specify_cli/cli/commands/agent/test_tasks_status_progress.py
 role: implementer
 tags: []
@@ -130,11 +131,12 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 
 **Steps**:
 1. Add focused tests for approved-only, done-only, mixed approved/done, and empty/no-progress states.
-2. Cover human output if practical through CLI runner tests.
-3. Cover JSON output if any JSON field is touched.
-4. Keep fixtures local and deterministic.
+2. Cover `src/specify_cli/agent_utils/status.py` through `tests/specify_cli/agent_utils/test_status.py` if that helper surface changes.
+3. Cover human output if practical through CLI runner tests.
+4. Cover JSON output if any JSON field is touched.
+5. Keep fixtures local and deterministic.
 
-**Files**: `tests/specify_cli/status/test_progress.py`, `tests/specify_cli/status/test_progress_integration.py`, and/or `tests/specify_cli/cli/commands/agent/test_tasks_status_progress.py`.
+**Files**: `tests/specify_cli/status/test_progress.py`, `tests/specify_cli/status/test_progress_integration.py`, `tests/specify_cli/agent_utils/test_status.py`, and/or `tests/specify_cli/cli/commands/agent/test_tasks_status_progress.py`.
 
 **Validation**: Focused tests fail against the old ambiguous behavior and pass after the change.
 

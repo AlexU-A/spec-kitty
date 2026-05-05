@@ -97,33 +97,37 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 
 **Validation**: `smoke-evidence.md` includes commands, exit statuses, and key output summaries.
 
-### Subtask T015: Prepare SaaS-enabled smoke path
+### Subtask T015: Prepare SaaS-enabled lifecycle smoke path
 
-**Purpose**: Select hosted/sync commands that exercise current CLI surfaces safely.
+**Purpose**: Build a SaaS-enabled smoke that mirrors the local lifecycle where practical, rather than reducing the smoke to status/help probes.
 
 **Steps**:
-1. Identify which commands touch hosted auth, tracker, SaaS, or sync.
-2. Prefix every such command with `SPEC_KITTY_ENABLE_SAAS_SYNC=1`.
-3. Do not claim tracker rollout gating exists.
-4. Record any auth prerequisite or blocker precisely.
+1. Start from the local lifecycle sequence in T014: setup, specify, plan, tasks, implement/review or bounded equivalent fixture path, merge, and PR-ready evidence.
+2. For each lifecycle step, identify whether the current CLI surface has a hosted auth, tracker, SaaS, or sync path that can be exercised safely.
+3. Prefix every hosted auth, tracker, SaaS, or sync command with `SPEC_KITTY_ENABLE_SAAS_SYNC=1`.
+4. Treat auth/status/help probes only as prerequisites that establish readiness or explain blockers; they do not satisfy the SaaS-enabled lifecycle smoke by themselves.
+5. Do not claim tracker rollout gating exists.
+6. Record any auth prerequisite, hosted limitation, or blocker precisely before running the smoke.
 
 **Files**: evidence files only.
 
-**Validation**: Every hosted/sync command in the evidence shows the env var.
+**Validation**: The planned SaaS-enabled command sequence maps back to the local lifecycle steps, and every hosted/sync command in the evidence shows the env var.
 
-### Subtask T016: Run SaaS-enabled smoke
+### Subtask T016: Run SaaS-enabled lifecycle smoke
 
-**Purpose**: Prove hosted/sync paths behave on this machine's dev deployment path.
+**Purpose**: Prove the current prerelease lifecycle works with SaaS-enabled paths where practical on this machine's dev deployment path.
 
 **Steps**:
-1. Run selected hosted/sync commands with `SPEC_KITTY_ENABLE_SAAS_SYNC=1`.
-2. Capture success, expected unauthenticated status, or actionable failure.
-3. Avoid destructive hosted operations.
-4. Preserve logs or summarized outputs in `smoke-artifacts/**` if useful.
+1. Run the SaaS-enabled lifecycle sequence prepared in T015, mirroring setup, specify, plan, tasks, implement/review or bounded equivalent fixture path, merge, and PR-ready evidence where current CLI surfaces allow it.
+2. Use `SPEC_KITTY_ENABLE_SAAS_SYNC=1` on every command path that touches hosted auth, tracker, SaaS, or sync behavior.
+3. Capture success, expected unauthenticated status, or actionable failure for each lifecycle step.
+4. If a lifecycle step cannot safely exercise SaaS, record the exact reason and the prerequisite probe output separately.
+5. Avoid destructive hosted operations.
+6. Preserve logs or summarized outputs in `smoke-artifacts/**` if useful.
 
 **Files**: evidence files only.
 
-**Validation**: Evidence distinguishes pass, expected auth limitation, issue-linked failure, or stable-release blocker.
+**Validation**: Evidence distinguishes lifecycle coverage from prerequisite probes, and any missing SaaS lifecycle coverage is explicitly marked as expected auth limitation, issue-linked failure, or stable-release blocker.
 
 ### Subtask T017: Handle failures according to the contract
 
@@ -156,7 +160,8 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 ## Definition of Done
 
 - Local-only smoke is run and documented.
-- SaaS-enabled smoke is run and documented with required env var use.
+- SaaS-enabled smoke mirrors the local lifecycle where practical and is documented with required env var use.
+- Status/help/auth probes are recorded only as prerequisites, not as standalone proof of SaaS lifecycle success.
 - Any failure has a fix, linked issue, or stable-release blocker decision.
 - Evidence is committed in mission-owned files.
 
@@ -168,4 +173,4 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 
 ## Reviewer Guidance
 
-Reviewers should check that the local-only smoke truly avoids hosted dependencies and that every hosted/sync command in the SaaS-enabled smoke uses `SPEC_KITTY_ENABLE_SAAS_SYNC=1`.
+Reviewers should check that the local-only smoke truly avoids hosted dependencies, that the SaaS-enabled smoke mirrors the lifecycle where practical, and that every hosted/sync command uses `SPEC_KITTY_ENABLE_SAAS_SYNC=1`. Reject evidence that only runs status/help/auth probes and claims full SaaS smoke success.

@@ -8,6 +8,7 @@ work_packages:
       - "src/specify_cli/status/progress.py"
       - "tests/specify_cli/status/test_progress.py"
       - "tests/specify_cli/status/test_progress_integration.py"
+      - "tests/specify_cli/agent_utils/test_status.py"
       - "tests/specify_cli/cli/commands/agent/test_tasks_status_progress.py"
     requirement_refs:
       - FR-001
