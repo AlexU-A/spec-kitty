@@ -23,7 +23,7 @@ subtasks:
 - T022
 - T023
 - T024
-agent: "codex:gpt-5:curator-carla:curator"
+agent: "codex:gpt-5:curator-carla:reviewer"
 history: []
 agent_profile: curator-carla
 authoritative_surface: kitty-specs/stable-320-p1-release-confidence-01KQTPZC/
@@ -35,7 +35,7 @@ owned_files:
 - kitty-specs/stable-320-p1-release-confidence-01KQTPZC/issue-closure-notes.md
 role: curator
 tags: []
-shell_pid: "12275"
+shell_pid: "15276"
 ---
 
 # Work Package Prompt: WP04 - Release Evidence And Deferrals
@@ -171,3 +171,4 @@ Reviewers should verify that evidence is concrete, current, and scoped. Check th
 
 - 2026-05-05T01:02:50Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Started implementation via action command
 - 2026-05-05T01:04:37Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Ready for review: release evidence, deferrals, and issue closure notes compiled
+- 2026-05-05T01:04:54Z – codex:gpt-5:curator-carla:reviewer – shell_pid=15276 – Started review via action command
