@@ -3,6 +3,7 @@ work_package_id: WP04
 title: Local Session Hot Path And Cross-Process Coordination
 dependencies:
 - WP02
+- WP03
 requirement_refs:
 - C-001
 - C-002
@@ -69,7 +70,7 @@ Implementation command: `spec-kitty agent action implement WP04 --agent <name>`
 
 ## Dependencies
 
-Depends on WP02. Do not start this WP until refresh-lock test isolation is clear, because both WPs reason about auth concurrency behavior.
+Depends on WP02 and WP03. Do not start this WP until refresh-lock test isolation is clear and the BLE001 guardrail exists, because this WP edits auth concurrency/storage files that must satisfy the new guard.
 
 ## Context & Constraints
 
@@ -88,16 +89,17 @@ Do not introduce Keychain, keyring, Secret Service, or OS credential-manager dep
 
 ## Subtasks & Detailed Guidance
 
-### Subtask T015 - Characterize current repeated local session work
+### Subtask T015 - Measure baseline repeated durable-session operations
 
-- **Purpose**: Ground the hot-path change in observed work rather than speculation.
+- **Purpose**: Ground the hot-path change in observed work and prove the final behavior improves the repeated durable-session operation count.
 - **Steps**:
   1. Inspect `TokenManager`, `refresh_transaction`, and secure storage reads.
-  2. Identify the repeated expensive operation in many short-lived process scenarios.
-  3. Add a small measurement or deterministic test fixture if useful.
+  2. Add a deterministic baseline fixture that counts repeated durable-session operations in a representative many-short-lived-process scenario.
+  3. Record the baseline count in the test name, assertion comment, or implementation note.
+  4. Make the post-change assertion prove fewer repeated durable-session operations than that baseline.
 - **Files**: owned auth files and tests.
 - **Parallel?**: Starts after WP02.
-- **Notes**: Do not overbuild based on theoretical performance issues.
+- **Notes**: This measurement is mandatory. Do not land this WP with only a narrative claim that work was reduced.
 
 ### Subtask T016 - Design and implement a bounded local handoff/cache helper
 
@@ -140,7 +142,8 @@ Do not introduce Keychain, keyring, Secret Service, or OS credential-manager dep
   1. Add `tests/auth/concurrency/test_session_hot_path.py`.
   2. Extend secure-storage/stress tests as needed for invalidation/fallback.
   3. Preserve `tests/packaging/test_windows_no_keyring.py` and extend only if needed.
-  4. Run focused auth concurrency/stress/secure-storage/packaging tests.
+  4. Run the WP03 guard against auth files touched by this WP.
+  5. Run focused auth concurrency/stress/secure-storage/packaging tests.
 - **Files**: owned test files.
 - **Parallel?**: No; final verification.
 - **Notes**: Tests should assert no forbidden credential-manager dependency.
@@ -161,12 +164,15 @@ Run broader auth concurrency tests if `refresh_transaction.py` or `token_manager
 uv run pytest tests/auth/concurrency
 ```
 
+Also run the WP03 guard or the focused guard test command after auth edits so new or preserved suppressions in WP04-owned auth files satisfy the guard contract.
+
 ## Definition of Done
 
-- Many short-lived process coverage demonstrates reduced repeated expensive work or a documented minimal safe handoff.
+- Many short-lived process coverage records a baseline and demonstrates fewer repeated durable-session operations than that baseline.
 - Stale/missing handoff falls back to encrypted durable storage.
 - Refresh coordination remains single-flight or equivalent.
 - No forbidden credential-manager dependency is introduced.
+- The WP03 BLE001 guard passes for auth files touched by this WP.
 
 ## Risks & Mitigations
 
@@ -181,12 +187,15 @@ Reviewers should focus on the trust boundary: no plaintext token leakage, no new
 
 Before moving this WP to `for_review`, verify:
 
+- [ ] A representative many-process test records a baseline durable-session operation count.
+- [ ] The final representative many-process test proves fewer repeated durable-session operations than the baseline.
 - [ ] The hot path falls back to encrypted file-only storage when handoff state is missing.
 - [ ] The hot path falls back to encrypted file-only storage when handoff state is stale or invalid.
 - [ ] Logout or local session clear invalidates any handoff/cache state.
 - [ ] Refresh coordination still uses the existing lock or an equivalent tested boundary.
 - [ ] No raw token material appears in stdout, stderr, logs, or assertion failure messages.
 - [ ] Packaging checks still prove `keyring` and OS credential-manager dependencies are absent.
+- [ ] The WP03 BLE001 guard passes after this WP's auth edits.
 
 ## Out Of Scope
 
@@ -197,7 +206,7 @@ Before moving this WP to `for_review`, verify:
 
 ## Implementation Handoff Notes
 
-Start with characterization. If the current code already avoids repeated expensive work after WP02, it is acceptable to implement a smaller coordination guard and document the finding in tests. Avoid a large daemon or background process unless the existing behavior provides clear evidence that a simple derived handoff cannot satisfy the requirement.
+Start with mandatory characterization. If the current code already avoids repeated expensive work after WP02, the representative baseline should prove that; otherwise implement the smallest coordination guard that creates a measurable reduction. Avoid a large daemon or background process unless the baseline proves a simple derived handoff cannot satisfy the requirement.
 
 Leave a short note for WP05 explaining what work was reduced and which fallback path proves durable storage remains authoritative.
 Include enough measurement context that reviewers can distinguish a real hot-path improvement from a cosmetic refactor.

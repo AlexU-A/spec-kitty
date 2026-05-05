@@ -22,7 +22,7 @@
 | T012 | Define the scoped auth/storage suppression rule and reason-quality checks | WP03 |  |
 | T013 | Add guardrail tests for justified, missing, and generic BLE001 reasons | WP03 |  |
 | T014 | Wire actionable file/line failure output into the review/check surface | WP03 |  |
-| T015 | Characterize current repeated local session work for many short-lived processes | WP04 | [P] |
+| T015 | Measure baseline repeated durable-session operations for many short-lived processes | WP04 | [P] |
 | T016 | Design and implement a bounded local session handoff/cache helper | WP04 |  |
 | T017 | Integrate hot-path fallback with encrypted file-only durable storage | WP04 |  |
 | T018 | Preserve cross-process refresh coordination and benign replay handling | WP04 |  |
@@ -106,17 +106,18 @@
 
 **Risks**:
 - Do not make the guard so broad that unrelated non-auth suppressions become blockers for this mission.
+- WP03 owns scoped auth command and auth transport/revoke cleanup; WP04 owns cleanup for auth hot-path files it edits after the guard exists.
 
 ### WP04 Local Session Hot Path And Cross-Process Coordination
 
 **Prompt**: `tasks/WP04-local-session-hot-path-and-cross-process-coordination.md`
 **Priority**: P2
-**Dependencies**: WP02
+**Dependencies**: WP02, WP03
 **Estimated prompt size**: ~420 lines
 **Goal**: Add bounded local session hot-path behavior for many short-lived processes while preserving encrypted file-only storage as the root of trust.
 **Independent test**: Many-process local session coverage demonstrates reduced repeated work, safe stale-handoff fallback, and no forbidden credential-manager dependencies.
 
-- [ ] T015 Characterize current repeated local session work for many short-lived processes (WP04)
+- [ ] T015 Measure baseline repeated durable-session operations for many short-lived processes (WP04)
 - [ ] T016 Design and implement a bounded local session handoff/cache helper (WP04)
 - [ ] T017 Integrate hot-path fallback with encrypted file-only durable storage (WP04)
 - [ ] T018 Preserve cross-process refresh coordination and benign replay handling (WP04)
@@ -126,7 +127,7 @@
 - Use `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/session-hot-path.md`.
 - Treat any cache/handoff as derived and invalidatable. Durable encrypted file storage remains authoritative.
 
-**Parallel opportunities**: Starts after WP02. It can proceed independently of WP01 and WP03 once auth-concurrency test isolation is clear.
+**Parallel opportunities**: Starts after WP02 and WP03. It can proceed independently of WP01 once auth-concurrency test isolation and the BLE001 guardrail are clear.
 
 **Risks**:
 - Do not store raw token material in user-visible or plaintext diagnostic surfaces.
@@ -160,9 +161,10 @@
 
 ```
 WP01
-WP02 ──> WP04 ┐
-WP03          ├──> WP05
-WP01 ─────────┘
+WP02 ┐
+     ├──> WP04 ┐
+WP03 ┘         ├──> WP05
+WP01 ──────────┘
 ```
 
 ## MVP Recommendation

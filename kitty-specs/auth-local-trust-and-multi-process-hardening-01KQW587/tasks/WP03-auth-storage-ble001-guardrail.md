@@ -27,6 +27,14 @@ execution_mode: code_change
 model: ''
 owned_files:
 - src/specify_cli/cli/commands/review.py
+- src/specify_cli/cli/commands/auth.py
+- src/specify_cli/cli/commands/_auth_doctor.py
+- src/specify_cli/cli/commands/_auth_login.py
+- src/specify_cli/cli/commands/_auth_logout.py
+- src/specify_cli/cli/commands/_auth_status.py
+- src/specify_cli/auth/flows/revoke.py
+- src/specify_cli/auth/transport.py
+- src/specify_cli/auth/http/transport.py
 - tests/review/test_ble001_guardrail.py
 role: implementer
 tags: []
@@ -60,7 +68,7 @@ Read:
 - `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/ble001-guardrail.md`
 - Existing BLE001 audit code in `src/specify_cli/cli/commands/review.py`
 
-This WP should not take ownership of unrelated auth code cleanup unless a focused guard test proves a scoped suppression is currently unjustified. If cleanup is needed, keep it minimal and note it for the reviewer.
+This WP owns guard implementation plus scoped cleanup in auth command, auth revoke, and auth transport files. It does not own the auth hot-path files assigned to WP04 (`token_manager.py`, `refresh_transaction.py`, `session.py`, `secure_storage/file_fallback.py`). WP04 depends on this guard and must clean up suppressions in its own auth files after the guard exists.
 
 ## Branch Strategy
 
@@ -149,13 +157,14 @@ Before moving this WP to `for_review`, verify:
 - [ ] A scoped suppression with a generic reason fails.
 - [ ] Failure output includes file path and line number.
 - [ ] Existing review command behavior still works for normal mission review.
+- [ ] Existing scoped suppressions in WP03-owned auth command/transport/revoke files either pass the new reason rule or are cleaned up.
 
 ## Out Of Scope
 
 - Do not audit the entire repository as part of this WP.
 - Do not ban all broad catches. Some broad catches are acceptable when they translate or isolate failure at a documented boundary.
 - Do not create a separate linter command unless the existing review/check surface cannot support the guard.
-- Do not edit auth/storage production files unless a scoped failing suppression requires a minimal reason update.
+- Do not edit WP04-owned auth hot-path files. If the guard finds violations there, record them for WP04 to clean up after this guard lands.
 
 ## Implementation Handoff Notes
 
@@ -183,6 +192,7 @@ Record:
 
 - The focused test command for the guard.
 - Whether any existing auth/storage suppressions needed reason updates.
+- Which scoped cleanup files were handled by WP03 and which WP04-owned files remain for WP04.
 - A short description of the accepted reason format.
 - Confirmation that failure output includes file and line.
 
