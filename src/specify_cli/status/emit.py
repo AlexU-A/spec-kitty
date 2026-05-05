@@ -336,7 +336,7 @@ def emit_status_transition(  # NOSONAR — central orchestration hub; 15 of 20 p
                 policy_metadata,
                 review_result,
             )
-        ) or force or execution_mode != "worktree" or not ensure_sync_daemon or not sync_dossier
+        ) or force or execution_mode != "worktree"
         if mixed_legacy_args:
             raise TypeError(
                 "emit_status_transition accepts either a TransitionRequest or legacy transition arguments, not both"
