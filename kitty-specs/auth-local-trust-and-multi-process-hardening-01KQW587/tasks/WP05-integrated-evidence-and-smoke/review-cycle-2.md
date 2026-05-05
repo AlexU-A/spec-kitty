@@ -7,6 +7,10 @@ reviewed_at: '2026-05-05T15:34:43Z'
 reviewer_agent: unknown
 verdict: rejected
 wp_id: WP05
+review_artifact_override_at: "2026-05-05T15:54:23Z"
+review_artifact_override_actor: "operator"
+review_artifact_override_wp_id: "WP05"
+review_artifact_override_reason: "Review passed: evidence uses lane A 9099a032 and lane B 306bc815; focused suites pass including FR-011 146 passed"
 ---
 
 **Issue 1**: FR-011 is not satisfied in the integrated evidence and must block WP05 approval.

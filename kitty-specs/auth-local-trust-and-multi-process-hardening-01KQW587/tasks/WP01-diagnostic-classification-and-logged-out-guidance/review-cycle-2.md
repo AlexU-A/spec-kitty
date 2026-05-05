@@ -7,6 +7,10 @@ reviewed_at: '2026-05-05T14:14:01Z'
 reviewer_agent: unknown
 verdict: rejected
 wp_id: WP01
+review_artifact_override_at: "2026-05-05T14:25:19Z"
+review_artifact_override_actor: "operator"
+review_artifact_override_wp_id: "WP01"
+review_artifact_override_reason: "Review passed: cycle 3 verified prior no-token sync blocker fixed; unauthenticated failures/report agree and queue preserved; focused sync/tracker tests passed"
 ---
 
 **Issue 1**: Logged-out hosted sync still has no machine-facing `unauthenticated` classification.

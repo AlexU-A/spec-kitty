@@ -7,6 +7,10 @@ reviewed_at: '2026-05-05T14:59:37Z'
 reviewer_agent: unknown
 verdict: rejected
 wp_id: WP04
+review_artifact_override_at: "2026-05-05T15:15:08Z"
+review_artifact_override_actor: "operator"
+review_artifact_override_wp_id: "WP04"
+review_artifact_override_reason: "Review passed: concurrency suite 22 passed; hot-path matrix 12 passed/2 skipped; BLE001 guard 5 passed; fixtures fail fast on hosted /api/v1/me"
 ---
 
 **Issue 1**: Broader auth concurrency verification still performs hosted membership I/O and does not pass.
