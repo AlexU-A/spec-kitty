@@ -22,8 +22,8 @@ subtasks:
 - T010
 phase: Phase 1 - Test Isolation
 assignee: ''
-agent: codex
-shell_pid: '40760'
+agent: "codex:gpt-5:python-pedro:implementer"
+shell_pid: "40760"
 history:
 - at: '2026-05-05T13:41:33Z'
   actor: system
@@ -209,3 +209,4 @@ Record these facts in the Activity Log or implementation notes:
 > **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
 
 - 2026-05-05T13:41:33Z – system – Prompt created.
+- 2026-05-05T13:57:54Z – codex:gpt-5:python-pedro:implementer – shell_pid=40760 – Assigned agent via action command
