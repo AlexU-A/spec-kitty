@@ -224,3 +224,4 @@ Include enough measurement context that reviewers can distinguish a real hot-pat
 - 2026-05-05T14:42:32Z – codex:gpt-5:python-pedro:implementer – shell_pid=99643 – Started implementation via action command
 - 2026-05-05T14:52:44Z – codex:gpt-5:python-pedro:implementer – shell_pid=99643 – WP04 review fixes committed: stale summary durable auth result and fingerprint OSError miss handling.
 - 2026-05-05T14:53:54Z – codex:gpt-5:python-pedro:reviewer – shell_pid=7288 – Started review via action command
+- 2026-05-05T14:59:38Z – codex:gpt-5:python-pedro:reviewer – shell_pid=7288 – Moved to planned
