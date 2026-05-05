@@ -22,11 +22,11 @@
 | T012 | Define the scoped auth/storage suppression rule and reason-quality checks | WP03 |  | [D] |
 | T013 | Add guardrail tests for justified, missing, and generic BLE001 reasons | WP03 |  | [D] |
 | T014 | Wire actionable file/line failure output into the review/check surface | WP03 |  | [D] |
-| T015 | Measure baseline repeated durable-session operations for many short-lived processes | WP04 | [P] |
-| T016 | Design and implement a bounded local session handoff/cache helper | WP04 |  |
-| T017 | Integrate hot-path fallback with encrypted file-only durable storage | WP04 |  |
-| T018 | Preserve cross-process refresh coordination and benign replay handling | WP04 |  |
-| T019 | Add hot-path, stale-handoff, secure-storage, and packaging regression coverage | WP04 |  |
+| T015 | Measure baseline repeated durable-session operations for many short-lived processes | WP04 | [D] |
+| T016 | Design and implement a bounded local session handoff/cache helper | WP04 |  | [D] |
+| T017 | Integrate hot-path fallback with encrypted file-only durable storage | WP04 |  | [D] |
+| T018 | Preserve cross-process refresh coordination and benign replay handling | WP04 |  | [D] |
+| T019 | Add hot-path, stale-handoff, secure-storage, and packaging regression coverage | WP04 |  | [D] |
 | T020 | Run the focused auth/sync/tracker/review/packaging evidence suite | WP05 |  |
 | T021 | Record hosted smoke commands with `SPEC_KITTY_ENABLE_SAAS_SYNC=1` where applicable | WP05 |  |
 | T022 | Compile acceptance evidence for #829, #907, #889, #977, and CLI-side #77 | WP05 |  |
@@ -117,11 +117,11 @@
 **Goal**: Add bounded local session hot-path behavior for many short-lived processes while preserving encrypted file-only storage as the root of trust.
 **Independent test**: Many-process local session coverage demonstrates reduced repeated work, safe stale-handoff fallback, and no forbidden credential-manager dependencies.
 
-- [ ] T015 Measure baseline repeated durable-session operations for many short-lived processes (WP04)
-- [ ] T016 Design and implement a bounded local session handoff/cache helper (WP04)
-- [ ] T017 Integrate hot-path fallback with encrypted file-only durable storage (WP04)
-- [ ] T018 Preserve cross-process refresh coordination and benign replay handling (WP04)
-- [ ] T019 Add hot-path, stale-handoff, secure-storage, and packaging regression coverage (WP04)
+- [x] T015 Measure baseline repeated durable-session operations for many short-lived processes (WP04)
+- [x] T016 Design and implement a bounded local session handoff/cache helper (WP04)
+- [x] T017 Integrate hot-path fallback with encrypted file-only durable storage (WP04)
+- [x] T018 Preserve cross-process refresh coordination and benign replay handling (WP04)
+- [x] T019 Add hot-path, stale-handoff, secure-storage, and packaging regression coverage (WP04)
 
 **Implementation notes**:
 - Use `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/session-hot-path.md`.
