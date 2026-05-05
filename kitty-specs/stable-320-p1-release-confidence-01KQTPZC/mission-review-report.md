@@ -4,7 +4,7 @@
 **Date**: 2026-05-05
 **Mission**: `stable-320-p1-release-confidence-01KQTPZC` - Stable 3.2.0 P1 Release Confidence
 **Baseline commit**: `14375247`
-**HEAD at review**: `8ffb7bf38b1fd02e97981021981e3e9eecbb24ee`
+**HEAD at review**: `9d95db33`
 **WPs reviewed**: WP01, WP02, WP03, WP04
 
 ---
@@ -16,7 +16,7 @@
 - Command: `SPEC_KITTY_ENABLE_SAAS_SYNC=1 UV_CACHE_DIR=/private/tmp/spec-kitty-uv-cache uv run --extra test python -m pytest tests/contract/ -v`
 - Exit code: 0
 - Result: PASS
-- Notes: 237 passed, 1 skipped. Initial review exposed board-summary `mission_number` string output and orchestrator-api non-JSON stdout when sync warnings were emitted; both were fixed in commit `8ffb7bf3` and the full gate passed afterward.
+- Notes: 237 passed, 1 skipped. Initial review exposed board-summary `mission_number` string output and orchestrator-api non-JSON stdout when sync warnings were emitted; both were fixed in commit `8ffb7bf3` and the full gate passed afterward. The post-push CI agent integration shard then exposed a request-object sync-control regression in `emit_status_transition`; commit `9d95db33` fixed that path, and the local CI shard reproduction passed.
 
 ### Gate 2 - Architectural tests
 
@@ -74,6 +74,9 @@ Resolved during mission review:
   `src/specify_cli/status/work_package_lifecycle.py`: orchestrator-api
   transitions disable sync daemon/dossier side effects so stdout remains a
   single JSON envelope when `SPEC_KITTY_ENABLE_SAAS_SYNC=1`.
+- `src/specify_cli/status/emit.py`: request-object transition calls now accept
+  the same sync daemon/dossier controls without being misclassified as mixed
+  legacy arguments; this fixed the `integration-tests-agent` CI shard.
 - `issue-matrix.md` was added so Gate 4 has explicit issue verdicts.
 
 ## Risk Findings
