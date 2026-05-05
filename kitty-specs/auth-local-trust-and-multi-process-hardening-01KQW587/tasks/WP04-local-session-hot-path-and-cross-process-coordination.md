@@ -231,3 +231,4 @@ Include enough measurement context that reviewers can distinguish a real hot-pat
 - 2026-05-05T15:15:09Z – codex:gpt-5:python-pedro:reviewer – shell_pid=12682 – Review passed: concurrency suite 22 passed; hot-path matrix 12 passed/2 skipped; BLE001 guard 5 passed; fixtures fail fast on hosted /api/v1/me
 - 2026-05-05T15:37:36Z – codex:gpt-5:python-pedro:reviewer – shell_pid=12682 – Moved to planned
 - 2026-05-05T15:37:59Z – codex:gpt-5:python-pedro:implementer – shell_pid=19520 – Started implementation via action command
+- 2026-05-05T15:39:53Z – codex:gpt-5:python-pedro:implementer – shell_pid=19520 – Ready for review: non-file storage bypasses hot path; FR-011 slice 146 passed; WP04 slice 30 passed, 2 skipped
