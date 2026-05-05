@@ -11,14 +11,16 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock
 
+from specify_cli.auth import session_hot_path
 from specify_cli.auth.secure_storage.file_fallback import FileFallbackStorage
 from specify_cli.auth.session import StoredSession, Team
-from specify_cli.auth import session_hot_path
 from specify_cli.auth.session_hot_path import (
     handoff_path_for_store,
     invalidate_session_hot_path,
     load_session_hot_path,
+    publish_session_hot_path,
 )
+import specify_cli.auth.token_manager as token_manager_module
 from specify_cli.auth.token_manager import TokenManager
 
 
@@ -179,6 +181,28 @@ def test_durable_fingerprint_oserror_is_hot_path_miss(
     assert load_session_hot_path(store_dir) is None
 
 
+def test_publish_fingerprint_oserror_is_best_effort_miss(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    store_dir = tmp_path / "auth"
+    store_dir.mkdir()
+    (store_dir / "session.json").write_text("{}", encoding="utf-8")
+
+    def raise_deleted_durable_file(_cred_file: Path) -> dict[str, int]:
+        raise OSError("session deleted during hot-path publish")
+
+    monkeypatch.setattr(
+        session_hot_path,
+        "_durable_fingerprint",
+        raise_deleted_durable_file,
+    )
+
+    publish_session_hot_path(store_dir, _make_session())
+
+    assert not handoff_path_for_store(store_dir).exists()
+
+
 def test_non_path_like_storage_store_path_bypasses_hot_path() -> None:
     session = _make_session()
     storage = Mock()
@@ -191,6 +215,32 @@ def test_non_path_like_storage_store_path_bypasses_hot_path() -> None:
     assert tm.is_authenticated is True
     assert tm.get_current_session() is session
     storage.read.assert_called_once_with()
+
+
+def test_publish_failure_does_not_clear_loaded_durable_session(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    store_dir = tmp_path / "auth"
+    storage = _CountingFastFileStorage(base_dir=store_dir)
+    session = _make_session()
+    storage.write(session)
+    invalidate_session_hot_path(store_dir)
+
+    def raise_publish_failure(_store_dir: Path, _session: StoredSession) -> None:
+        raise OSError("cannot write derived hot-path handoff")
+
+    monkeypatch.setattr(
+        token_manager_module,
+        "publish_session_hot_path",
+        raise_publish_failure,
+    )
+
+    tm = TokenManager(storage)
+    tm.load_from_storage_sync()
+
+    assert tm.get_current_session() == session
+    assert tm.is_authenticated is True
 
 
 def test_clear_session_invalidates_handoff(tmp_path: Path) -> None:

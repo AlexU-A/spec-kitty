@@ -227,7 +227,10 @@ class TokenManager:
         store_path = self._storage_store_path()
         if store_path is None:
             return
-        publish_session_hot_path(store_path, self._session)
+        try:
+            publish_session_hot_path(store_path, self._session)
+        except Exception as exc:  # noqa: BLE001 — derived hot-path publish must never invalidate durable auth state
+            log.debug("Could not publish session hot-path summary: %s", exc)
 
     # ---- token provisioning ---------------------------------------------
 

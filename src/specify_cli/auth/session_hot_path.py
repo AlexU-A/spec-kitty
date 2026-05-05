@@ -113,29 +113,30 @@ def publish_session_hot_path(store_dir: Path, session: StoredSession) -> None:
     cred_file = store_dir / "session.json"
     if not cred_file.exists():
         return
-    now = time.time()
-    payload: dict[str, Any] = {
-        "schema_version": _SCHEMA_VERSION,
-        "generated_at": now,
-        "max_age_seconds": _MAX_AGE_SECONDS,
-        "durable_fingerprint": _durable_fingerprint(cred_file),
-        "refresh_token_expires_at": (
-            session.refresh_token_expires_at.isoformat()
-            if session.refresh_token_expires_at is not None
-            else None
-        ),
-    }
-
-    handoff_file = handoff_path_for_store(store_dir)
-    tmp = handoff_file.with_suffix(handoff_file.suffix + ".tmp")
+    tmp: Path | None = None
     try:
+        now = time.time()
+        payload: dict[str, Any] = {
+            "schema_version": _SCHEMA_VERSION,
+            "generated_at": now,
+            "max_age_seconds": _MAX_AGE_SECONDS,
+            "durable_fingerprint": _durable_fingerprint(cred_file),
+            "refresh_token_expires_at": (
+                session.refresh_token_expires_at.isoformat()
+                if session.refresh_token_expires_at is not None
+                else None
+            ),
+        }
+        handoff_file = handoff_path_for_store(store_dir)
+        tmp = handoff_file.with_suffix(handoff_file.suffix + ".tmp")
         tmp.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
         with suppress(OSError):
             os.chmod(tmp, 0o600)
         tmp.replace(handoff_file)
     except OSError:
-        with suppress(OSError):
-            tmp.unlink()
+        if tmp is not None:
+            with suppress(OSError):
+                tmp.unlink()
 
 
 def invalidate_session_hot_path(store_dir: Path) -> None:
