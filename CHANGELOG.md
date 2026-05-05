@@ -17,6 +17,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [3.2.0rc1] - 2026-05-05
+
+3.2.0rc1 is the first release candidate for the 3.2.0 line. It rolls up the
+workflow stabilization work from the alpha series and the final release
+confidence missions.
+
+### Fixed
+
+- Hardened the mission status, review, and merge surfaces that block reliable
+  implement-review-retrospect loops, including stale review verdict handling,
+  finalized-board routing, canonical review feedback pointers, and first-class
+  retrospective synthesis paths.
+- Fixed task-board progress semantics so done-only counts are no longer paired
+  with unlabeled weighted readiness percentages; JSON status output now exposes
+  explicit progress semantics and weighted readiness fields (#966).
+- Added an installed dependency drift guard for shared packages so release and
+  review evidence fail when the active environment disagrees with `uv.lock` for
+  `spec-kitty-events` or `spec-kitty-tracker` (#848).
+- Addressed final mission-review regressions around machine-facing contract
+  output, sync-control side effects, and the charter golden-path E2E assertion.
+
+### Release Validation
+
+- Closed the stale ruff blocker after `uv run ruff check src tests` passed on
+  current `main` (#869).
+- Re-ran final local release gates from fresh `origin/main`: dependency sync,
+  lock validation, installed shared-package drift guard, ruff, and the
+  contract/architectural/release pytest batch all passed.
+- GitHub Actions on the release candidate base commit passed `CI Quality`,
+  `ci-windows`, and `Protect Main Branch`.
+
+### Known Limitations
+
+- The broad strict mypy gate remains tracked for follow-up in #971 and is not a
+  blocking gate for this release candidate.
+- Hosted sync drain reliability has a known SaaS-sync limitation tracked in
+  #889; do not treat this release candidate as proof of full hosted drain
+  reliability until that issue is fixed.
+
 ## [3.2.0a10] - 2026-05-04
 
 3.2.0a10 is a prerelease that stabilizes the implement-review-retrospect
