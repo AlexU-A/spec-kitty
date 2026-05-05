@@ -172,3 +172,4 @@ Reviewers should verify that evidence is concrete, current, and scoped. Check th
 - 2026-05-05T01:02:50Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Started implementation via action command
 - 2026-05-05T01:04:37Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Ready for review: release evidence, deferrals, and issue closure notes compiled
 - 2026-05-05T01:04:54Z – codex:gpt-5:curator-carla:reviewer – shell_pid=15276 – Started review via action command
+- 2026-05-05T01:05:39Z – codex:gpt-5:curator-carla:reviewer – shell_pid=15276 – Review passed: release evidence, #971 decision, P2/P3 deferrals, issue closure notes, and ruff status are concrete and scoped
