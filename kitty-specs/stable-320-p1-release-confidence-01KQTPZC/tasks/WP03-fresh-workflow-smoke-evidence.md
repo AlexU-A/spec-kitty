@@ -179,3 +179,4 @@ Reviewers should check that the local-only smoke truly avoids hosted dependencie
 ## Activity Log
 
 - 2026-05-05T00:52:56Z – codex:gpt-5:python-pedro:implementer – shell_pid=957 – Started implementation via action command
+- 2026-05-05T01:01:16Z – codex:gpt-5:python-pedro:implementer – shell_pid=957 – Ready for review: local and SaaS-enabled lifecycle smoke evidence recorded
