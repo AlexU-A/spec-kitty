@@ -18,10 +18,10 @@
 | T008 | Add a no-hosted-/me regression guard for #977 | WP02 |  | [D] |
 | T009 | Preserve targeted production membership rehydrate coverage | WP02 |  | [D] |
 | T010 | Run hosted-URL-set and hosted-URL-unset concurrency verification | WP02 |  | [D] |
-| T011 | Extract or isolate the auth/storage BLE001 audit helper | WP03 | [P] |
-| T012 | Define the scoped auth/storage suppression rule and reason-quality checks | WP03 |  |
-| T013 | Add guardrail tests for justified, missing, and generic BLE001 reasons | WP03 |  |
-| T014 | Wire actionable file/line failure output into the review/check surface | WP03 |  |
+| T011 | Extract or isolate the auth/storage BLE001 audit helper | WP03 | [D] |
+| T012 | Define the scoped auth/storage suppression rule and reason-quality checks | WP03 |  | [D] |
+| T013 | Add guardrail tests for justified, missing, and generic BLE001 reasons | WP03 |  | [D] |
+| T014 | Wire actionable file/line failure output into the review/check surface | WP03 |  | [D] |
 | T015 | Measure baseline repeated durable-session operations for many short-lived processes | WP04 | [P] |
 | T016 | Design and implement a bounded local session handoff/cache helper | WP04 |  |
 | T017 | Integrate hot-path fallback with encrypted file-only durable storage | WP04 |  |
@@ -93,10 +93,10 @@
 **Goal**: Make unjustified broad exception suppressions in auth/storage paths fail with actionable file/line feedback.
 **Independent test**: Guard fixtures cover justified, missing, and generic BLE001 reasons.
 
-- [ ] T011 Extract or isolate the auth/storage BLE001 audit helper (WP03)
-- [ ] T012 Define the scoped auth/storage suppression rule and reason-quality checks (WP03)
-- [ ] T013 Add guardrail tests for justified, missing, and generic BLE001 reasons (WP03)
-- [ ] T014 Wire actionable file/line failure output into the review/check surface (WP03)
+- [x] T011 Extract or isolate the auth/storage BLE001 audit helper (WP03)
+- [x] T012 Define the scoped auth/storage suppression rule and reason-quality checks (WP03)
+- [x] T013 Add guardrail tests for justified, missing, and generic BLE001 reasons (WP03)
+- [x] T014 Wire actionable file/line failure output into the review/check surface (WP03)
 
 **Implementation notes**:
 - Use `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/ble001-guardrail.md`.
