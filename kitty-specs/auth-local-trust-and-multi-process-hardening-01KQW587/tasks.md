@@ -13,11 +13,11 @@
 | T003 | Fix direct-ingress missing Private Teamspace classification for #889 | WP01 |  |
 | T004 | Add logged-out Teamspace/tracker guidance for #829 | WP01 |  |
 | T005 | Add diagnostic regression tests and verify focused sync/tracker slices | WP01 |  |
-| T006 | Reproduce the hosted-URL-set refresh-lock isolation boundary without live network dependency | WP02 | [P] |
-| T007 | Make machine refresh-lock fixtures hermetic for post-refresh membership rehydrate | WP02 |  |
-| T008 | Add a no-hosted-/me regression guard for #977 | WP02 |  |
-| T009 | Preserve targeted production membership rehydrate coverage | WP02 |  |
-| T010 | Run hosted-URL-set and hosted-URL-unset concurrency verification | WP02 |  |
+| T006 | Reproduce the hosted-URL-set refresh-lock isolation boundary without live network dependency | WP02 | [D] |
+| T007 | Make machine refresh-lock fixtures hermetic for post-refresh membership rehydrate | WP02 |  | [D] |
+| T008 | Add a no-hosted-/me regression guard for #977 | WP02 |  | [D] |
+| T009 | Preserve targeted production membership rehydrate coverage | WP02 |  | [D] |
+| T010 | Run hosted-URL-set and hosted-URL-unset concurrency verification | WP02 |  | [D] |
 | T011 | Extract or isolate the auth/storage BLE001 audit helper | WP03 | [P] |
 | T012 | Define the scoped auth/storage suppression rule and reason-quality checks | WP03 |  |
 | T013 | Add guardrail tests for justified, missing, and generic BLE001 reasons | WP03 |  |
@@ -69,11 +69,11 @@
 **Goal**: Fix #977 by making refresh-lock concurrency tests hermetic when hosted SaaS URL environment variables are present.
 **Independent test**: Run the focused refresh-lock test with `SPEC_KITTY_SAAS_URL=https://spec-kitty-dev.fly.dev` and verify zero hosted `/api/v1/me` calls.
 
-- [ ] T006 Reproduce the hosted-URL-set refresh-lock isolation boundary without live network dependency (WP02)
-- [ ] T007 Make machine refresh-lock fixtures hermetic for post-refresh membership rehydrate (WP02)
-- [ ] T008 Add a no-hosted-/me regression guard for #977 (WP02)
-- [ ] T009 Preserve targeted production membership rehydrate coverage (WP02)
-- [ ] T010 Run hosted-URL-set and hosted-URL-unset concurrency verification (WP02)
+- [x] T006 Reproduce the hosted-URL-set refresh-lock isolation boundary without live network dependency (WP02)
+- [x] T007 Make machine refresh-lock fixtures hermetic for post-refresh membership rehydrate (WP02)
+- [x] T008 Add a no-hosted-/me regression guard for #977 (WP02)
+- [x] T009 Preserve targeted production membership rehydrate coverage (WP02)
+- [x] T010 Run hosted-URL-set and hosted-URL-unset concurrency verification (WP02)
 
 **Implementation notes**:
 - Use `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/refresh-lock-hermeticity.md`.
