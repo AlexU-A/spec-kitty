@@ -41,8 +41,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 from typing import Annotated
 
 import typer
@@ -55,6 +54,8 @@ from specify_cli.post_merge.review_artifact_consistency import (
 )
 from specify_cli.status.reducer import materialize
 from specify_cli.task_utils import TaskCliError, find_repo_root
+
+_IDENTIFIER_CHARCLASS = r"\w"
 
 
 def review_mission(
@@ -208,7 +209,7 @@ def review_mission(
                 current_file = line[6:]
             elif line.startswith("+") and not line.startswith("+++"):
                 m = re.match(
-                    r"^\+\s*(def|class)\s+([A-Za-z][A-Za-z0-9_]*)\s*[\(:]",
+                    rf"^\+\s*(def|class)\s+([A-Za-z]{_IDENTIFIER_CHARCLASS}*)\s*[\(:]",
                     line,
                 )
                 if m and not m.group(2).startswith("_"):
@@ -302,7 +303,7 @@ def review_mission(
     else:
         verdict = "pass"
 
-    reviewed_at = datetime.now(timezone.utc).isoformat()
+    reviewed_at = datetime.now(UTC).isoformat()
     report_lines = [
         "---",
         f"verdict: {verdict}",
@@ -346,9 +347,12 @@ def review_mission(
     # ------------------------------------------------------------------
     # Summary output
     # ------------------------------------------------------------------
-    verdict_color = (
-        "green" if verdict == "pass" else ("yellow" if verdict == "pass_with_notes" else "red")
-    )
+    if verdict == "pass":
+        verdict_color = "green"
+    elif verdict == "pass_with_notes":
+        verdict_color = "yellow"
+    else:
+        verdict_color = "red"
     console.print(
         f"\nVerdict: [{verdict_color}]{verdict}[/{verdict_color}]  ({len(findings)} finding(s))"
     )
