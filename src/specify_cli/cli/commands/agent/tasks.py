@@ -24,7 +24,7 @@ from specify_cli.sync.events import (
 from specify_cli.status.emit import emit_status_transition
 from specify_cli.status.models import Lane, StatusEvent, TransitionRequest
 from specify_cli.status.preflight import is_dossier_snapshot as _is_dossier_snapshot
-from specify_cli.status.progress import compute_weighted_progress
+from specify_cli.status.progress import PROGRESS_SEMANTICS, compute_done_percentage, compute_weighted_progress
 from specify_cli.status.transitions import resolve_lane_alias
 from specify_cli.status.store import EventPersistenceError, EVENTS_FILENAME, read_events
 
@@ -3077,12 +3077,20 @@ def status(
             lane_counts = Counter(wp["lane"] for wp in work_packages)
             stale_count = sum(1 for wp in work_packages if wp.get("is_stale"))
             auto_commit_enabled = get_auto_commit_default(main_repo_root)
+            total_wps = len(work_packages)
+            done_count = sum(1 for wp in work_packages if wp["lane"] == Lane.DONE)
+            done_pct = round(compute_done_percentage(done_count, total_wps), 1)
+            progress_pct = round(compute_weighted_progress(_st_snapshot).percentage, 1) if _st_snapshot else 0
             result = {
                 **_mission_identity_payload(feature_dir),
-                "total_wps": len(work_packages),
+                "total_wps": total_wps,
                 "by_lane": dict(lane_counts),
                 "work_packages": work_packages,
-                "progress_percentage": round(compute_weighted_progress(_st_snapshot).percentage, 1) if _st_snapshot else 0,
+                "progress_percentage": progress_pct,
+                "progress_semantics": PROGRESS_SEMANTICS,
+                "weighted_percentage": progress_pct,
+                "done_count": done_count,
+                "done_percentage": done_pct,
                 "stale_wps": stale_count,
                 "stale_verdicts": stale_verdicts,
                 "stalled_wps": stalled_wps,
@@ -3135,6 +3143,7 @@ def status(
         in_progress = len(by_lane[Lane.CLAIMED]) + len(by_lane[Lane.IN_PROGRESS]) + len(by_lane[Lane.IN_REVIEW]) + len(by_lane[Lane.FOR_REVIEW])
         planned_count = len(by_lane[Lane.PLANNED])
         progress_pct = round(compute_weighted_progress(_st_snapshot).percentage, 1) if _st_snapshot else 0
+        done_pct = round(compute_done_percentage(done_count, total), 1)
 
         # Create title panel
         title_text = Text()
@@ -3146,11 +3155,13 @@ def status(
 
         # Progress bar
         progress_text = Text()
-        progress_text.append("Progress: ", style="bold")
+        progress_text.append("Done progress: ", style="bold")
         progress_text.append(f"{done_count}/{total}", style="bold green")
-        progress_text.append(f" ({progress_pct}%)", style="dim")
+        progress_text.append(f" ({done_pct}%)", style="dim")
+        progress_text.append("\nWeighted readiness: ", style="bold")
+        progress_text.append(f"{progress_pct}%", style="bold cyan")
 
-        # Create visual progress bar
+        # Create visual readiness bar
         bar_width = 40
         filled = int(bar_width * progress_pct / 100)
         bar = "█" * filled + "░" * (bar_width - filled)
@@ -3337,7 +3348,8 @@ def status(
         summary.add_column(style="bold")
         summary.add_column()
         summary.add_row("Total WPs:", str(total))
-        summary.add_row("Completed:", f"[green]{done_count}[/green] ({progress_pct}%)")
+        summary.add_row("Completed:", f"[green]{done_count}[/green] ({done_pct}%)")
+        summary.add_row("Weighted readiness:", f"[cyan]{progress_pct}%[/cyan]")
         summary.add_row("In Progress:", f"[blue]{in_progress}[/blue]")
         summary.add_row("Planned:", f"[yellow]{planned_count}[/yellow]")
 

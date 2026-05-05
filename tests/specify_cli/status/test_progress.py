@@ -280,6 +280,46 @@ def test_progress_result_to_dict_uses_mission_slug_key():
     assert payload["mission_slug"] == "064-complete-mission-identity-cutover"
 
 
+def test_progress_result_to_dict_names_weighted_and_done_semantics():
+    snapshot = _make_snapshot(
+        "test-feature",
+        {"WP01": "approved", "WP02": "approved"},
+    )
+    result = compute_weighted_progress(snapshot)
+
+    payload = result.to_dict()
+
+    assert payload["progress_semantics"] == "weighted_readiness"
+    assert payload["percentage"] == pytest.approx(80.0)
+    assert payload["weighted_percentage"] == pytest.approx(80.0)
+    assert payload["done_percentage"] == pytest.approx(0.0)
+    assert payload["done_count"] == 0
+    assert payload["total_count"] == 2
+
+
+def test_progress_result_to_dict_done_percentage_for_mixed_state():
+    snapshot = _make_snapshot(
+        "test-feature",
+        {"WP01": "done", "WP02": "approved", "WP03": "planned"},
+    )
+    result = compute_weighted_progress(snapshot)
+
+    payload = result.to_dict()
+
+    assert payload["weighted_percentage"] == pytest.approx(60.0)
+    assert payload["done_percentage"] == pytest.approx(33.3333)
+
+
+def test_progress_result_to_dict_empty_state_has_zero_done_and_weighted_percentages():
+    result = compute_weighted_progress(_make_snapshot("test-feature", {}))
+
+    payload = result.to_dict()
+
+    assert payload["progress_semantics"] == "weighted_readiness"
+    assert payload["weighted_percentage"] == 0.0
+    assert payload["done_percentage"] == 0.0
+
+
 # ---------------------------------------------------------------------------
 # generate_progress_json integration
 # ---------------------------------------------------------------------------

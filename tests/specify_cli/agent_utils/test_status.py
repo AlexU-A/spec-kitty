@@ -14,9 +14,11 @@ from __future__ import annotations
 import json
 import textwrap
 from datetime import UTC, datetime, timedelta, timezone
+from io import StringIO
 from pathlib import Path
 
 import pytest
+from rich.console import Console
 
 from specify_cli.agent_utils.status import (
     _analyze_parallelization,
@@ -250,6 +252,68 @@ def test_show_kanban_status_uses_lane_enum_grouping(mock_project: Path, monkeypa
     assert result["by_lane"]["in_progress"] == 1
     assert result["by_lane"]["done"] == 1
     assert result["by_lane"]["for_review"] == 1
+
+
+def test_show_kanban_status_separates_done_and_weighted_progress(
+    mock_project: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Approved-only boards name done completion and weighted readiness separately."""
+    mission_slug = "test-feature"
+    feature_dir = mock_project / "kitty-specs" / mission_slug
+    tasks_dir = feature_dir / "tasks"
+
+    _create_wp_file(tasks_dir, "WP01", "Approved Work 1")
+    _create_wp_file(tasks_dir, "WP02", "Approved Work 2")
+    _create_events_jsonl(feature_dir, [
+        {
+            "event_id": "01AAA001", "at": "2026-01-01T00:00:00+00:00",
+            "feature_slug": mission_slug, "wp_id": "WP01",
+            "from_lane": "planned", "to_lane": "approved",
+            "actor": "test", "force": True, "reason": None,
+            "evidence": None, "review_ref": None, "execution_mode": "worktree",
+        },
+        {
+            "event_id": "01AAA002", "at": "2026-01-01T00:01:00+00:00",
+            "feature_slug": mission_slug, "wp_id": "WP02",
+            "from_lane": "planned", "to_lane": "approved",
+            "actor": "test", "force": True, "reason": None,
+            "evidence": None, "review_ref": None, "execution_mode": "worktree",
+        },
+    ])
+
+    monkeypatch.chdir(mock_project)
+    monkeypatch.setattr(
+        "specify_cli.agent_utils.status.locate_project_root",
+        lambda cwd: mock_project,
+    )
+    monkeypatch.setattr(
+        "specify_cli.agent_utils.status.get_main_repo_root",
+        lambda repo_root: mock_project,
+    )
+
+    import specify_cli.agent_utils.status as status_mod
+
+    stream = StringIO()
+    monkeypatch.setattr(
+        status_mod,
+        "console",
+        Console(file=stream, width=120, force_terminal=False, color_system=None),
+    )
+
+    result = show_kanban_status(mission_slug)
+    output = stream.getvalue()
+
+    assert result["done_count"] == 0
+    assert result["done_percentage"] == pytest.approx(0.0)
+    assert result["progress_percentage"] == pytest.approx(80.0)
+    assert result["weighted_percentage"] == pytest.approx(80.0)
+    assert result["progress_semantics"] == "weighted_readiness"
+    assert "Done progress:" in output
+    assert "0/2 (0.0%)" in output
+    assert "Weighted readiness:" in output
+    assert "80.0%" in output
+    assert "Progress: 0/2 (80.0%)" not in output
 
 
 def test_show_kanban_status_all_9_lanes(mock_project: Path, monkeypatch: pytest.MonkeyPatch) -> None:

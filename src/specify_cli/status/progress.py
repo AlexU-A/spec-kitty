@@ -14,7 +14,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from specify_cli.identity.aliases import with_tracked_mission_slug_aliases
 from specify_cli.mission_metadata import mission_identity_fields
@@ -36,6 +36,15 @@ DEFAULT_LANE_WEIGHTS: dict[str, float] = {
     "blocked": 0.0,
     "canceled": 0.0,
 }
+
+PROGRESS_SEMANTICS = "weighted_readiness"
+
+
+def compute_done_percentage(done_count: int, total_count: int) -> float:
+    """Return done-only completion percentage for display and JSON output."""
+    if total_count <= 0:
+        return 0.0
+    return done_count / total_count * 100.0
 
 
 @dataclass
@@ -74,8 +83,13 @@ class ProgressResult:
     mission_number: str | None = None
     mission_type: str | None = None
 
+    @property
+    def done_percentage(self) -> float:
+        """Done-only completion percentage."""
+        return compute_done_percentage(self.done_count, self.total_count)
+
     def to_dict(self) -> dict[str, Any]:
-        return with_tracked_mission_slug_aliases(
+        return cast("dict[str, Any]", with_tracked_mission_slug_aliases(
             {
                 **mission_identity_fields(
                     self.mission_slug,
@@ -83,12 +97,15 @@ class ProgressResult:
                     self.mission_type,
                 ),
                 "percentage": round(self.percentage, 4),
+                "progress_semantics": PROGRESS_SEMANTICS,
+                "weighted_percentage": round(self.percentage, 4),
+                "done_percentage": round(self.done_percentage, 4),
                 "done_count": self.done_count,
                 "total_count": self.total_count,
                 "per_lane_counts": self.per_lane_counts,
                 "per_wp": [wp.to_dict() for wp in self.per_wp],
             }
-        )
+        ))
 
 
 def compute_weighted_progress(

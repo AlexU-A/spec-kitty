@@ -10,6 +10,7 @@ on:
       - 'src/**'
       - 'tests/**'
       - 'pyproject.toml'
+      - 'uv.lock'
       - 'ruff.toml'
       - '.github/workflows/ci-quality.yml'
   push:
@@ -21,6 +22,7 @@ on:
       - 'src/**'
       - 'tests/**'
       - 'pyproject.toml'
+      - 'uv.lock'
       - 'ruff.toml'
       - '.github/workflows/ci-quality.yml'
   schedule:

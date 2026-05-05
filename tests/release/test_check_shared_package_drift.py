@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
 from textwrap import dedent
+from types import ModuleType
 
 SCRIPT = (
     Path(__file__).resolve().parents[2]
@@ -61,6 +63,15 @@ def run_check(tmp_path: Path, *args: str) -> subprocess.CompletedProcess[str]:
         text=True,
         capture_output=True,
     )
+
+
+def load_script_module() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("check_shared_package_drift", SCRIPT)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_shared_package_drift_passes_with_aligned_sources(tmp_path: Path) -> None:
@@ -250,3 +261,53 @@ def test_shared_package_drift_fails_when_cli_constraint_is_unbounded(tmp_path: P
 
     assert result.returncode == 1
     assert "spec-kitty-events: dependency must use a bounded compatible range" in result.stderr
+
+
+def test_installed_version_guard_passes_when_installed_version_matches_lock() -> None:
+    module = load_script_module()
+
+    installed, issues = module.collect_installed_version_issues(
+        {"spec-kitty-events": "4.1.0"},
+        packages=("spec-kitty-events",),
+        version_reader=lambda package: "4.1.0",
+    )
+
+    assert installed == {"spec-kitty-events": "4.1.0"}
+    assert issues == []
+
+
+def test_installed_version_guard_reports_mismatch_with_remediation() -> None:
+    module = load_script_module()
+
+    installed, issues = module.collect_installed_version_issues(
+        {"spec-kitty-events": "4.1.0"},
+        packages=("spec-kitty-events",),
+        version_reader=lambda package: "4.0.0",
+    )
+
+    assert installed == {"spec-kitty-events": "4.0.0"}
+    assert issues == [
+        "spec-kitty-events installed version 4.0.0 does not match "
+        "uv.lock version 4.1.0. "
+        "Remediation: Run `uv sync --extra test --extra lint` before collecting release evidence."
+    ]
+
+
+def test_installed_version_guard_reports_missing_package_with_remediation() -> None:
+    module = load_script_module()
+
+    def missing_version(package: str) -> str:
+        raise module.importlib.metadata.PackageNotFoundError(package)
+
+    installed, issues = module.collect_installed_version_issues(
+        {"spec-kitty-events": "4.1.0"},
+        packages=("spec-kitty-events",),
+        version_reader=missing_version,
+    )
+
+    assert installed == {}
+    assert issues == [
+        "spec-kitty-events is not installed in the active environment; "
+        "uv.lock version is 4.1.0. "
+        "Remediation: Run `uv sync --extra test --extra lint` before collecting release evidence."
+    ]

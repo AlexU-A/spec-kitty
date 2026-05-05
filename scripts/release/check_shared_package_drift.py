@@ -4,8 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import importlib.metadata
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from collections.abc import Iterable
 
 try:
     import tomllib
@@ -20,6 +21,7 @@ PACKAGES = (
     "spec-kitty-tracker",
 )
 RETIRED_PACKAGES = ("spec-kitty-runtime",)
+INSTALLED_DRIFT_REMEDIATION = "Run `uv sync --extra test --extra lint` before collecting release evidence."
 
 
 def parse_args() -> argparse.Namespace:
@@ -28,6 +30,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lockfile", default="uv.lock")
     parser.add_argument("--saas-pyproject")
     parser.add_argument("--runtime-pyproject")
+    parser.add_argument(
+        "--check-installed",
+        action="store_true",
+        help="Compare installed shared-package versions in the active environment with uv.lock.",
+    )
     return parser.parse_args()
 
 
@@ -172,6 +179,35 @@ def extract_lock_versions(lockfile: dict[str, object], *, packages: Iterable[str
     return versions
 
 
+def collect_installed_version_issues(
+    lock_versions: dict[str, str],
+    *,
+    packages: Iterable[str],
+    version_reader: Callable[[str], str] = importlib.metadata.version,
+) -> tuple[dict[str, str], list[str]]:
+    installed_versions: dict[str, str] = {}
+    issues: list[str] = []
+    for package in packages:
+        lock_version = lock_versions[package]
+        try:
+            installed_version = version_reader(package)
+        except importlib.metadata.PackageNotFoundError:
+            issues.append(
+                f"{package} is not installed in the active environment; "
+                f"uv.lock version is {lock_version}. "
+                f"Remediation: {INSTALLED_DRIFT_REMEDIATION}"
+            )
+            continue
+        installed_versions[package] = installed_version
+        if installed_version != lock_version:
+            issues.append(
+                f"{package} installed version {installed_version} does not match "
+                f"uv.lock version {lock_version}. "
+                f"Remediation: {INSTALLED_DRIFT_REMEDIATION}"
+            )
+    return installed_versions, issues
+
+
 def extract_overrides(pyproject: dict[str, object]) -> list[str]:
     tool = pyproject.get("tool")
     if not isinstance(tool, dict):
@@ -226,6 +262,17 @@ def main() -> int:
             issues.append(
                 f"{package} uv.lock version {version} is outside CLI constraint "
                 f"{cli_constraints[package]}"
+            )
+
+    if args.check_installed:
+        installed_versions, installed_issues = collect_installed_version_issues(
+            lock_versions, packages=PACKAGES
+        )
+        issues.extend(installed_issues)
+        for package in PACKAGES:
+            installed_version = installed_versions.get(package, "not installed")
+            summary.append(
+                f"installed {package}: {installed_version} (uv.lock {lock_versions[package]})"
             )
 
     saas_pyproject = load_toml(args.saas_pyproject)

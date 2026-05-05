@@ -19,7 +19,7 @@ from rich.text import Text
 from specify_cli.core.paths import locate_project_root, get_main_repo_root
 from specify_cli.mission_metadata import resolve_mission_identity
 from specify_cli.status.models import Lane, StatusEvent
-from specify_cli.status.progress import compute_weighted_progress
+from specify_cli.status.progress import PROGRESS_SEMANTICS, compute_done_percentage, compute_weighted_progress
 from specify_cli.status.wp_state import wp_state_for
 from specify_cli.task_utils import extract_scalar, split_frontmatter
 
@@ -223,6 +223,7 @@ def show_kanban_status(mission_slug: str | None = None) -> dict:
         )
         progress_result = compute_weighted_progress(snapshot)
         progress_pct = round(progress_result.percentage, 1)
+        done_pct = round(compute_done_percentage(done_count, total), 1)
 
         # Analyze parallelization opportunities
         done_wp_ids = {wp["id"] for wp in work_packages if wp["lane"] == Lane.DONE}
@@ -265,7 +266,7 @@ def show_kanban_status(mission_slug: str | None = None) -> dict:
 
         # Display the status board
         _display_status_board(mission_slug, work_packages, by_lane, total, done_count,
-                            in_progress, planned_count, progress_pct, parallel_info)
+                            in_progress, planned_count, done_pct, progress_pct, parallel_info)
 
         # Return structured data (by_lane uses Lane.value to produce string keys)
         lane_counts = Counter(wp["lane"].value for wp in work_packages)
@@ -277,6 +278,9 @@ def show_kanban_status(mission_slug: str | None = None) -> dict:
             "by_lane": dict(lane_counts),
             "work_packages": work_packages,
             "progress_percentage": progress_pct,
+            "progress_semantics": PROGRESS_SEMANTICS,
+            "weighted_percentage": progress_pct,
+            "done_percentage": done_pct,
             "done_count": done_count,
             "in_progress_count": in_progress,
             "planned_count": planned_count,
@@ -362,7 +366,8 @@ def _analyze_parallelization(work_packages: list, done_wp_ids: set) -> dict:
 
 def _display_status_board(mission_slug: str, work_packages: list, by_lane: dict[Lane, list],
                          total: int, done_count: int, in_progress: int,
-                         planned_count: int, progress_pct: float, parallel_info: dict) -> None:
+                         planned_count: int, done_pct: float, progress_pct: float,
+                         parallel_info: dict) -> None:
     """Display the rich-formatted status board."""
     # Create title panel
     title_text = Text()
@@ -374,11 +379,13 @@ def _display_status_board(mission_slug: str, work_packages: list, by_lane: dict[
 
     # Progress bar
     progress_text = Text()
-    progress_text.append("Progress: ", style="bold")
+    progress_text.append("Done progress: ", style="bold")
     progress_text.append(f"{done_count}/{total}", style="bold green")
-    progress_text.append(f" ({progress_pct}%)", style="dim")
+    progress_text.append(f" ({done_pct}%)", style="dim")
+    progress_text.append("\nWeighted readiness: ", style="bold")
+    progress_text.append(f"{progress_pct}%", style="bold cyan")
 
-    # Create visual progress bar
+    # Create visual readiness bar
     bar_width = 40
     filled = int(bar_width * progress_pct / 100)
     bar = "█" * filled + "░" * (bar_width - filled)
@@ -548,7 +555,8 @@ def _display_status_board(mission_slug: str, work_packages: list, by_lane: dict[
     summary.add_column(style="bold")
     summary.add_column()
     summary.add_row("Total WPs:", str(total))
-    summary.add_row("Completed:", f"[green]{done_count}[/green] ({progress_pct}%)")
+    summary.add_row("Completed:", f"[green]{done_count}[/green] ({done_pct}%)")
+    summary.add_row("Weighted readiness:", f"[cyan]{progress_pct}%[/cyan]")
     summary.add_row("In Progress:", f"[blue]{in_progress}[/blue]")
     summary.add_row("Planned:", f"[yellow]{planned_count}[/yellow]")
 

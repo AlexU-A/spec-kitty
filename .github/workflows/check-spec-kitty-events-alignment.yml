@@ -5,12 +5,14 @@ on:
     branches: [main, develop, "2.x"]
     paths:
       - 'pyproject.toml'
+      - 'uv.lock'
       - 'scripts/release/**'
       - '.github/workflows/check-spec-kitty-events-alignment.yml'
   push:
     branches: [main, develop, "2.x"]
     paths:
       - 'pyproject.toml'
+      - 'uv.lock'
       - 'scripts/release/**'
       - '.github/workflows/check-spec-kitty-events-alignment.yml'
 

@@ -7,6 +7,7 @@ on:
       - 2.x
     paths:
       - pyproject.toml
+      - uv.lock
       - CHANGELOG.md
       - scripts/release/**
       - RELEASE_CHECKLIST.md
@@ -176,7 +177,7 @@ jobs:
             )
           fi
 
-          python scripts/release/check_shared_package_drift.py "${ARGS[@]}"
+          python scripts/release/check_shared_package_drift.py --check-installed "${ARGS[@]}"
 
       - name: Verify exact installability from built wheel
         run: python scripts/release/check_exact_install.py --package spec-kitty-cli
