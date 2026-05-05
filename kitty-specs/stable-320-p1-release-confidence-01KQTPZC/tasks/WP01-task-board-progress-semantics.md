@@ -25,8 +25,8 @@ subtasks:
 - T004
 - T005
 - T006
-agent: "codex:gpt-5:python-pedro:implementer"
-shell_pid: "87063"
+agent: "codex:gpt-5:python-pedro:reviewer"
+shell_pid: "98406"
 history: []
 agent_profile: python-pedro
 authoritative_surface: src/specify_cli/
@@ -179,3 +179,4 @@ Reviewers should focus on semantic clarity, JSON compatibility, and whether test
 
 - 2026-05-05T00:36:58Z – codex:gpt-5:python-pedro:implementer – shell_pid=87063 – Assigned agent via action command
 - 2026-05-05T00:47:20Z – codex:gpt-5:python-pedro:implementer – shell_pid=87063 – Ready for review: progress semantics clarified; focused tests, ruff, and progress mypy passed
+- 2026-05-05T00:47:30Z – codex:gpt-5:python-pedro:reviewer – shell_pid=98406 – Started review via action command
