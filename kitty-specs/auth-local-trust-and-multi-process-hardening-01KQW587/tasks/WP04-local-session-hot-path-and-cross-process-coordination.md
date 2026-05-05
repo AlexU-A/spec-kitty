@@ -1,0 +1,209 @@
+---
+work_package_id: WP04
+title: Local Session Hot Path And Cross-Process Coordination
+dependencies:
+- WP02
+requirement_refs:
+- C-001
+- C-002
+- FR-008
+- FR-009
+- FR-010
+- FR-011
+- NFR-003
+- NFR-005
+planning_base_branch: main
+merge_target_branch: main
+branch_strategy: Planning artifacts for this mission were generated on main. During /spec-kitty.implement this WP may branch from a dependency-specific base, but completed changes must merge back into main unless the human explicitly redirects the landing branch.
+subtasks:
+- T015
+- T016
+- T017
+- T018
+- T019
+phase: Phase 2 - Local Session Hot Path
+assignee: ''
+agent: codex
+history:
+- at: '2026-05-05T13:41:33Z'
+  actor: system
+  action: Prompt generated via /spec-kitty.tasks
+agent_profile: python-pedro
+authoritative_surface: src/specify_cli/auth/
+execution_mode: code_change
+model: ''
+owned_files:
+- src/specify_cli/auth/session_hot_path.py
+- src/specify_cli/auth/token_manager.py
+- src/specify_cli/auth/refresh_transaction.py
+- src/specify_cli/auth/session.py
+- src/specify_cli/auth/secure_storage/file_fallback.py
+- tests/auth/concurrency/test_session_hot_path.py
+- tests/auth/stress/test_file_storage_concurrent.py
+- tests/auth/secure_storage/test_file_fallback_windows_root.py
+- tests/packaging/test_windows_no_keyring.py
+role: implementer
+tags: []
+task_type: implement
+---
+
+# Work Package Prompt: WP04 - Local Session Hot Path And Cross-Process Coordination
+
+## ⚡ Do This First: Load Agent Profile
+
+Use the `/ad-hoc-profile-load` skill to load the agent profile specified in the frontmatter, and behave according to its guidance before parsing the rest of this prompt.
+
+- **Profile**: `python-pedro`
+- **Role**: `implementer`
+- **Agent/tool**: `codex`
+
+If no profile is specified, run `spec-kitty agent profile list` and select the best match for this work package's `task_type` and `authoritative_surface`.
+
+---
+
+## Objective
+
+Reduce repeated expensive local session work for many short-lived CLI processes while preserving encrypted file-only storage as the durable root of trust. Any local handoff/cache must be derived, bounded, invalidatable, and safe to bypass.
+
+Implementation command: `spec-kitty agent action implement WP04 --agent <name>`
+
+## Dependencies
+
+Depends on WP02. Do not start this WP until refresh-lock test isolation is clear, because both WPs reason about auth concurrency behavior.
+
+## Context & Constraints
+
+Read:
+
+- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/contracts/session-hot-path.md`
+- `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/data-model.md`
+
+Do not introduce Keychain, keyring, Secret Service, or OS credential-manager dependencies. Do not print raw tokens. Default plan assumes no plaintext token cache. If implementation discovers a safer minimal design that avoids token caching entirely, prefer it.
+
+## Branch Strategy
+
+- **Planning/base branch at prompt creation**: `main`
+- **Final merge target for completed work**: `main`
+- **Actual execution workspace is resolved later**: `/spec-kitty.implement` decides the lane workspace path and records the lane branch in `base_branch`.
+
+## Subtasks & Detailed Guidance
+
+### Subtask T015 - Characterize current repeated local session work
+
+- **Purpose**: Ground the hot-path change in observed work rather than speculation.
+- **Steps**:
+  1. Inspect `TokenManager`, `refresh_transaction`, and secure storage reads.
+  2. Identify the repeated expensive operation in many short-lived process scenarios.
+  3. Add a small measurement or deterministic test fixture if useful.
+- **Files**: owned auth files and tests.
+- **Parallel?**: Starts after WP02.
+- **Notes**: Do not overbuild based on theoretical performance issues.
+
+### Subtask T016 - Design and implement a bounded local handoff/cache helper
+
+- **Purpose**: Add the smallest helper that reduces repeated work safely.
+- **Steps**:
+  1. Create `src/specify_cli/auth/session_hot_path.py` if a new helper is needed.
+  2. Keep handoff state derived from durable encrypted storage.
+  3. Include freshness/invalidation checks tied to durable state identity or mtime/content metadata.
+  4. Make missing/stale/unreadable handoff a normal fallback.
+- **Files**: `session_hot_path.py`, possibly `session.py` or `file_fallback.py`.
+- **Parallel?**: No; follows T015.
+- **Notes**: Avoid storing raw token material in a plaintext handoff artifact.
+
+### Subtask T017 - Integrate fallback with durable encrypted storage
+
+- **Purpose**: Preserve the storage trust model.
+- **Steps**:
+  1. Integrate the helper at a narrow call site in auth/session loading.
+  2. Ensure durable encrypted storage remains authoritative for writes and invalidation.
+  3. Ensure logout/clear-session behavior invalidates any handoff state.
+- **Files**: `token_manager.py`, `session.py`, `file_fallback.py`, `session_hot_path.py`.
+- **Parallel?**: No; follows T016.
+- **Notes**: Keep public auth APIs stable unless a small additive helper is necessary.
+
+### Subtask T018 - Preserve refresh coordination and benign replay handling
+
+- **Purpose**: Avoid regressing shipped concurrency behavior.
+- **Steps**:
+  1. Inspect existing machine-wide refresh lock behavior.
+  2. Ensure hot-path use does not bypass lock coordination.
+  3. Add coverage for stale handoff plus refresh peer convergence if needed.
+- **Files**: `refresh_transaction.py`, auth concurrency tests.
+- **Parallel?**: No; follows T017.
+- **Notes**: Do not treat benign replay or lock contention as fatal user errors.
+
+### Subtask T019 - Add hot-path, secure-storage, and packaging regression coverage
+
+- **Purpose**: Prove both performance intent and security constraints.
+- **Steps**:
+  1. Add `tests/auth/concurrency/test_session_hot_path.py`.
+  2. Extend secure-storage/stress tests as needed for invalidation/fallback.
+  3. Preserve `tests/packaging/test_windows_no_keyring.py` and extend only if needed.
+  4. Run focused auth concurrency/stress/secure-storage/packaging tests.
+- **Files**: owned test files.
+- **Parallel?**: No; final verification.
+- **Notes**: Tests should assert no forbidden credential-manager dependency.
+
+## Test Strategy
+
+```bash
+uv run pytest \
+  tests/auth/concurrency/test_session_hot_path.py \
+  tests/auth/stress/test_file_storage_concurrent.py \
+  tests/auth/secure_storage/test_file_fallback_windows_root.py \
+  tests/packaging/test_windows_no_keyring.py
+```
+
+Run broader auth concurrency tests if `refresh_transaction.py` or `token_manager.py` behavior changes:
+
+```bash
+uv run pytest tests/auth/concurrency
+```
+
+## Definition of Done
+
+- Many short-lived process coverage demonstrates reduced repeated expensive work or a documented minimal safe handoff.
+- Stale/missing handoff falls back to encrypted durable storage.
+- Refresh coordination remains single-flight or equivalent.
+- No forbidden credential-manager dependency is introduced.
+
+## Risks & Mitigations
+
+- **Risk**: Weakening storage security for speed. **Mitigation**: derived handoff only, durable encrypted storage authoritative.
+- **Risk**: Broad auth refactor. **Mitigation**: keep integration narrow and test through existing auth APIs.
+
+## Review Guidance
+
+Reviewers should focus on the trust boundary: no plaintext token leakage, no new credential-manager dependency, and no bypass of refresh locks.
+
+## Integration Verification
+
+Before moving this WP to `for_review`, verify:
+
+- [ ] The hot path falls back to encrypted file-only storage when handoff state is missing.
+- [ ] The hot path falls back to encrypted file-only storage when handoff state is stale or invalid.
+- [ ] Logout or local session clear invalidates any handoff/cache state.
+- [ ] Refresh coordination still uses the existing lock or an equivalent tested boundary.
+- [ ] No raw token material appears in stdout, stderr, logs, or assertion failure messages.
+- [ ] Packaging checks still prove `keyring` and OS credential-manager dependencies are absent.
+
+## Out Of Scope
+
+- Do not replace encrypted file-only durable storage.
+- Do not introduce macOS Keychain, Python `keyring`, Linux Secret Service, or a Windows credential-manager dependency.
+- Do not add SaaS server changes.
+- Do not redesign OAuth refresh replay handling except where needed to preserve existing behavior under the hot path.
+
+## Implementation Handoff Notes
+
+Start with characterization. If the current code already avoids repeated expensive work after WP02, it is acceptable to implement a smaller coordination guard and document the finding in tests. Avoid a large daemon or background process unless the existing behavior provides clear evidence that a simple derived handoff cannot satisfy the requirement.
+
+Leave a short note for WP05 explaining what work was reduced and which fallback path proves durable storage remains authoritative.
+Include enough measurement context that reviewers can distinguish a real hot-path improvement from a cosmetic refactor.
+
+## Activity Log
+
+> **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
+
+- 2026-05-05T13:41:33Z – system – Prompt created.
