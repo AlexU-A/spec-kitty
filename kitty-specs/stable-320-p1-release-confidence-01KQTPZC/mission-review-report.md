@@ -4,7 +4,7 @@
 **Date**: 2026-05-05
 **Mission**: `stable-320-p1-release-confidence-01KQTPZC` - Stable 3.2.0 P1 Release Confidence
 **Baseline commit**: `14375247`
-**HEAD at review**: `9d95db33`
+**HEAD at review**: `6490f9c9`
 **WPs reviewed**: WP01, WP02, WP03, WP04
 
 ---
@@ -77,7 +77,19 @@ Resolved during mission review:
 - `src/specify_cli/status/emit.py`: request-object transition calls now accept
   the same sync daemon/dossier controls without being misclassified as mixed
   legacy arguments; this fixed the `integration-tests-agent` CI shard.
+- `tests/e2e/test_charter_epic_golden_path.py`: the charter golden-path E2E
+  assertion now compares lifecycle records against the `/next --advance`
+  envelope that actually writes the lifecycle entry, not the read-only query
+  preview. This fixed the post-push `e2e-cross-cutting` CI failure in commit
+  `6490f9c9`.
 - `issue-matrix.md` was added so Gate 4 has explicit issue verdicts.
+
+Post-fix CI on `6490f9c9`:
+
+- `CI Quality`: PASS, including `e2e-cross-cutting` in 5m47s.
+- `ci-windows`: PASS.
+- `Protect Main Branch`: expected failure for direct push to `main`; not a
+  code-health signal per repository policy.
 
 ## Risk Findings
 
