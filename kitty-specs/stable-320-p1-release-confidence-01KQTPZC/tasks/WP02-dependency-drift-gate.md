@@ -26,8 +26,8 @@ subtasks:
 - T010
 - T011
 - T012
-agent: codex
-shell_pid: '87130'
+agent: "codex:gpt-5:python-pedro:implementer"
+shell_pid: "87130"
 history: []
 agent_profile: python-pedro
 authoritative_surface: scripts/release/
@@ -177,3 +177,7 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 ## Reviewer Guidance
 
 Reviewers should ask whether the final evidence is enough to close #848. If code was added, confirm the guard is actually invoked by the relevant release/review path.
+
+## Activity Log
+
+- 2026-05-05T00:37:06Z – codex:gpt-5:python-pedro:implementer – shell_pid=87130 – Assigned agent via action command
