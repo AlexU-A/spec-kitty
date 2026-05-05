@@ -27,10 +27,10 @@
 | T017 | Integrate hot-path fallback with encrypted file-only durable storage | WP04 |  | [D] |
 | T018 | Preserve cross-process refresh coordination and benign replay handling | WP04 |  | [D] |
 | T019 | Add hot-path, stale-handoff, secure-storage, and packaging regression coverage | WP04 |  | [D] |
-| T020 | Run the focused auth/sync/tracker/review/packaging evidence suite | WP05 |  |
-| T021 | Record hosted smoke commands with `SPEC_KITTY_ENABLE_SAAS_SYNC=1` where applicable | WP05 |  |
-| T022 | Compile acceptance evidence for #829, #907, #889, #977, and CLI-side #77 | WP05 |  |
-| T023 | Record pre-existing failure issue links if any verification command fails from baseline | WP05 |  |
+| T020 | Run the focused auth/sync/tracker/review/packaging evidence suite | WP05 |  | [D] |
+| T021 | Record hosted smoke commands with `SPEC_KITTY_ENABLE_SAAS_SYNC=1` where applicable | WP05 |  | [D] |
+| T022 | Compile acceptance evidence for #829, #907, #889, #977, and CLI-side #77 | WP05 |  | [D] |
+| T023 | Record pre-existing failure issue links if any verification command fails from baseline | WP05 |  | [D] |
 
 ## Work Packages
 
@@ -142,10 +142,10 @@
 **Goal**: Run and record the final evidence suite for all acceptance checks and hosted smoke policy.
 **Independent test**: Evidence artifact includes focused command output summaries and issue links for any pre-existing baseline failures.
 
-- [ ] T020 Run the focused auth/sync/tracker/review/packaging evidence suite (WP05)
-- [ ] T021 Record hosted smoke commands with `SPEC_KITTY_ENABLE_SAAS_SYNC=1` where applicable (WP05)
-- [ ] T022 Compile acceptance evidence for #829, #907, #889, #977, and CLI-side #77 (WP05)
-- [ ] T023 Record pre-existing failure issue links if any verification command fails from baseline (WP05)
+- [x] T020 Run the focused auth/sync/tracker/review/packaging evidence suite (WP05)
+- [x] T021 Record hosted smoke commands with `SPEC_KITTY_ENABLE_SAAS_SYNC=1` where applicable (WP05)
+- [x] T022 Compile acceptance evidence for #829, #907, #889, #977, and CLI-side #77 (WP05)
+- [x] T023 Record pre-existing failure issue links if any verification command fails from baseline (WP05)
 
 **Implementation notes**:
 - Use `/Users/robert/spec-kitty-dev/spec-kitty-20260505-085847-6BpmsS/spec-kitty/kitty-specs/auth-local-trust-and-multi-process-hardening-01KQW587/quickstart.md`.
