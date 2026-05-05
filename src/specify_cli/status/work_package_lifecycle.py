@@ -105,6 +105,8 @@ def start_implementation_status(
     execution_mode: str,
     repo_root: Path | None = None,
     policy_metadata: dict[str, Any] | None = None,
+    ensure_sync_daemon: bool = True,
+    sync_dossier: bool = True,
     allow_rework: bool = False,
     rework_reason: str = "Re-implementing after review feedback",
 ) -> WorkPackageStartResult:
@@ -139,7 +141,9 @@ def start_implementation_status(
                         repo_root=repo_root,
                         policy_metadata=policy_metadata,
                     ),
-                ]
+                ],
+                ensure_sync_daemon=ensure_sync_daemon,
+                sync_dossier=sync_dossier,
             )
             return WorkPackageStartResult(wp_id, Lane.PLANNED, Lane.IN_PROGRESS, actor, tuple(events), claimed_by=actor)
 
@@ -159,7 +163,9 @@ def start_implementation_status(
                         repo_root=repo_root,
                         policy_metadata=policy_metadata,
                     )
-                ]
+                ],
+                ensure_sync_daemon=ensure_sync_daemon,
+                sync_dossier=sync_dossier,
             )
             return WorkPackageStartResult(wp_id, Lane.CLAIMED, Lane.IN_PROGRESS, actor, tuple(events), claimed_by=actor)
 
@@ -182,7 +188,9 @@ def start_implementation_status(
                     execution_mode=execution_mode,
                     repo_root=repo_root,
                     policy_metadata=policy_metadata,
-                )
+                ),
+                ensure_sync_daemon=ensure_sync_daemon,
+                sync_dossier=sync_dossier,
             )
             return WorkPackageStartResult(wp_id, current_lane, Lane.IN_PROGRESS, actor, (event,), claimed_by=actor)
 
@@ -199,6 +207,8 @@ def start_review_status(
     execution_mode: str,
     repo_root: Path | None = None,
     policy_metadata: dict[str, Any] | None = None,
+    ensure_sync_daemon: bool = True,
+    sync_dossier: bool = True,
     review_ref: str | None = "action-review-claim",
 ) -> WorkPackageStartResult:
     """Idempotently move a WP into ``in_review`` for a reviewer actor."""
@@ -222,7 +232,9 @@ def start_review_status(
                     execution_mode=execution_mode,
                     repo_root=repo_root,
                     policy_metadata=policy_metadata,
-                )
+                ),
+                ensure_sync_daemon=ensure_sync_daemon,
+                sync_dossier=sync_dossier,
             )
             return WorkPackageStartResult(wp_id, Lane.FOR_REVIEW, Lane.IN_REVIEW, actor, (event,), claimed_by=actor)
 

@@ -111,9 +111,13 @@ def _build_board_summary(snapshot: Any) -> dict[str, Any]:
             lanes[lane] = []
         lanes[lane].append(wp_id)
 
+    mission_number = snapshot.mission_number
+    if isinstance(mission_number, str) and mission_number.isdigit():
+        mission_number = int(mission_number)
+
     return {
         "mission_slug": snapshot.mission_slug,
-        "mission_number": snapshot.mission_number,
+        "mission_number": mission_number,
         "mission_type": snapshot.mission_type,
         "total_wps": len(snapshot.work_packages),
         "summary": snapshot.summary,
