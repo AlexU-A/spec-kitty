@@ -26,8 +26,8 @@ subtasks:
 - T010
 - T011
 - T012
-agent: "codex:gpt-5:python-pedro:implementer"
-shell_pid: "87130"
+agent: "codex:gpt-5:python-pedro:reviewer"
+shell_pid: "98482"
 history: []
 agent_profile: python-pedro
 authoritative_surface: scripts/release/
@@ -182,3 +182,4 @@ Reviewers should ask whether the final evidence is enough to close #848. If code
 
 - 2026-05-05T00:37:06Z – codex:gpt-5:python-pedro:implementer – shell_pid=87130 – Assigned agent via action command
 - 2026-05-05T00:45:36Z – codex:gpt-5:python-pedro:implementer – shell_pid=87130 – Ready for review: installed shared-package drift guard added and release tests passed
+- 2026-05-05T00:47:38Z – codex:gpt-5:python-pedro:reviewer – shell_pid=98482 – Started review via action command
