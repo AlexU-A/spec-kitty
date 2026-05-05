@@ -212,3 +212,4 @@ Record these facts in the Activity Log or implementation notes:
 - 2026-05-05T13:57:54Z – codex:gpt-5:python-pedro:implementer – shell_pid=40760 – Assigned agent via action command
 - 2026-05-05T14:02:48Z – codex:gpt-5:python-pedro:implementer – shell_pid=40760 – Ready for review
 - 2026-05-05T14:03:06Z – codex:gpt-5:python-pedro:reviewer – shell_pid=59207 – Started review via action command
+- 2026-05-05T14:05:03Z – codex:gpt-5:python-pedro:reviewer – shell_pid=59207 – Review passed: hermetic refresh-lock tests guard hosted /api/v1/me and preserve membership rehydrate coverage
