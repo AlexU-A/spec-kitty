@@ -708,7 +708,6 @@ def _run_next_and_assert_lifecycle(
     )
     _maybe_dump_envelope("next (query)", payload)
     assert payload is not None
-    issued_step_id = _extract_step_id(payload)
 
     # FR-014 / FR-021: the live envelope MUST expose a prompt-file key.
     if "prompt_file" not in payload and "prompt_path" not in payload:
@@ -741,6 +740,7 @@ def _run_next_and_assert_lifecycle(
     _maybe_dump_envelope("next (advance)", payload)
     assert payload is not None
     _assert_advanced_or_documented_block(payload, fr_id="FR-015")
+    issued_step_id = _extract_step_id(payload)
 
     # WP03 / FR-006 / FR-007 (closes #844): same kind-discriminated
     # invariants on the advance envelope. The advance envelope is the one
@@ -796,10 +796,12 @@ def _run_next_and_assert_lifecycle(
         f"  contents: {lifecycle_path.read_text(encoding='utf-8')!r}"
     )
 
-    # Tight regression-sensitive assertion: each record's
-    # canonical_action_id contains the issued step id. WP05 records
-    # carry `canonical_action_id = "<mission_step>::<action>"`, so we
-    # match via substring against the live envelope's step id.
+    # Tight regression-sensitive assertion: at least one record for this
+    # issued step must exist. The lifecycle log is project-wide, so earlier
+    # charter/profile records can be present and must not be treated as drift
+    # for this `next` issuance.
+    matching_started: list[dict[str, Any]] = []
+    matching_records: list[dict[str, Any]] = []
     for record in (*started, *completed_records):
         action = (
             record.get("canonical_action_id")
@@ -807,12 +809,20 @@ def _run_next_and_assert_lifecycle(
             or record.get("step_id")
             or record.get("action_id")
         )
-        assert isinstance(action, str) and (
+        if isinstance(action, str) and (
             action == issued_step_id or issued_step_id in action
-        ), (
-            f"FR-012 / #843: lifecycle record action {action!r} does not "
-            f"match issued step id {issued_step_id!r}."
-        )
+        ):
+            matching_records.append(record)
+            if record in started:
+                matching_started.append(record)
+
+    assert matching_started, (
+        "FR-012 / #843: no `started` lifecycle record matches issued "
+        f"step id {issued_step_id!r}.\n"
+        f"  matching records: {matching_records!r}\n"
+        f"  lifecycle file: {lifecycle_path}\n"
+        f"  contents: {lifecycle_path.read_text(encoding='utf-8')!r}"
+    )
 
 
 def _run_retrospect(project: Path, run_cli: RunCli) -> None:
