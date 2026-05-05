@@ -11,6 +11,9 @@ requirement_refs:
 planning_base_branch: main
 merge_target_branch: main
 branch_strategy: Planning artifacts for this mission were generated on main. During /spec-kitty.implement this WP may branch from a dependency-specific base, but completed changes must merge back into main unless the human explicitly redirects the landing branch.
+base_branch: kitty/mission-auth-local-trust-and-multi-process-hardening-01KQW587
+base_commit: e087f100e629f815be9179f984af9ff8236c53ae
+created_at: '2026-05-05T13:57:52.734876+00:00'
 subtasks:
 - T006
 - T007
@@ -20,6 +23,7 @@ subtasks:
 phase: Phase 1 - Test Isolation
 assignee: ''
 agent: codex
+shell_pid: '40760'
 history:
 - at: '2026-05-05T13:41:33Z'
   actor: system

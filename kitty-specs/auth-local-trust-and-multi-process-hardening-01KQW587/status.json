@@ -1,7 +1,7 @@
 {
-  "event_count": 7,
-  "last_event_id": "01KQW6W74X309W2V01E5R0G7PZ",
-  "materialized_at": "2026-05-05T13:57:39.100964+00:00",
+  "event_count": 9,
+  "last_event_id": "01KQW6WMFC1J46V7X4W3KW909W",
+  "materialized_at": "2026-05-05T13:57:52.747873+00:00",
   "mission_number": "",
   "mission_slug": "auth-local-trust-and-multi-process-hardening-01KQW587",
   "mission_type": "software-dev",
@@ -12,9 +12,9 @@
     "claimed": 0,
     "done": 0,
     "for_review": 0,
-    "in_progress": 1,
+    "in_progress": 2,
     "in_review": 0,
-    "planned": 4
+    "planned": 3
   },
   "work_packages": {
     "WP01": {
@@ -25,11 +25,11 @@
       "last_transition_at": "2026-05-05T13:57:39.100964+00:00"
     },
     "WP02": {
-      "actor": "finalize-tasks",
+      "actor": "codex:gpt-5:python-pedro:implementer",
       "force_count": 1,
-      "lane": "planned",
-      "last_event_id": "01KQW6BEENSDYHB26A5WEZKH5J",
-      "last_transition_at": "2026-05-05T13:48:29.525269+00:00"
+      "lane": "in_progress",
+      "last_event_id": "01KQW6WMFC1J46V7X4W3KW909W",
+      "last_transition_at": "2026-05-05T13:57:52.747873+00:00"
     },
     "WP03": {
       "actor": "finalize-tasks",
