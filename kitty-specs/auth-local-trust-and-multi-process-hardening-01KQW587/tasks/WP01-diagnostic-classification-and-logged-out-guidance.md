@@ -25,8 +25,8 @@ subtasks:
 - T005
 phase: Phase 1 - Diagnostics
 assignee: ''
-agent: codex
-shell_pid: '40006'
+agent: "codex:gpt-5:python-pedro:implementer"
+shell_pid: "40006"
 history:
 - at: '2026-05-05T13:41:33Z'
   actor: system
@@ -211,3 +211,4 @@ If you add a new helper, keep its API private to the CLI unless multiple command
 > **CRITICAL**: Activity log entries MUST be in chronological order (oldest first, newest last).
 
 - 2026-05-05T13:41:33Z – system – Prompt created.
+- 2026-05-05T13:57:40Z – codex:gpt-5:python-pedro:implementer – shell_pid=40006 – Assigned agent via action command
