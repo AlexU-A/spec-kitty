@@ -118,4 +118,3 @@ release-confidence mission and is recorded in `deferrals.md`.
   status/progress coverage passed.
 - WP01 and WP02 source commits are approved on lane branches and become part of
   the release candidate after `spec-kitty merge`.
-

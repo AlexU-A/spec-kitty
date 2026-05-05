@@ -37,4 +37,3 @@ WP03's SaaS-enabled smoke completed the lifecycle with
 because the local daemon reported lock/auth-refresh contention and WebSocket
 offline. This is a bounded workstation sync limitation, not a tracker rollout
 gate and not a stable-release blocker.
-
