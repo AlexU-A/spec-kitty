@@ -23,7 +23,7 @@ subtasks:
 - T022
 - T023
 - T024
-agent: codex
+agent: "codex:gpt-5:curator-carla:curator"
 history: []
 agent_profile: curator-carla
 authoritative_surface: kitty-specs/stable-320-p1-release-confidence-01KQTPZC/
@@ -35,6 +35,7 @@ owned_files:
 - kitty-specs/stable-320-p1-release-confidence-01KQTPZC/issue-closure-notes.md
 role: curator
 tags: []
+shell_pid: "12275"
 ---
 
 # Work Package Prompt: WP04 - Release Evidence And Deferrals
@@ -165,3 +166,7 @@ Branch strategy: planning artifacts were generated on `main`; completed changes 
 ## Reviewer Guidance
 
 Reviewers should verify that evidence is concrete, current, and scoped. Check that deferrals are explicit rather than vague and that any stable-release blocker is named directly.
+
+## Activity Log
+
+- 2026-05-05T01:02:50Z – codex:gpt-5:curator-carla:curator – shell_pid=12275 – Started implementation via action command
