@@ -1001,7 +1001,7 @@ def now(
         return
 
     console.print(f"Syncing {queue_size} queued event(s)...")
-    result = service.sync_now()
+    result = service.sync_now(show_progress=True)
 
     if _sync_result_looks_unauthenticated(queue_size, result):
         console.print(f"[yellow]{_UNAUTHENTICATED_SYNC_NOW_MESSAGE}[/yellow]")
