@@ -17,6 +17,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [3.2.0rc5] - 2026-05-11
+
+3.2.0rc5 closes the remaining CLI-side TeamSpace migration readiness gaps found
+while rechecking the historical mission-state migration parent issue.
+
+### Changed
+
+- Documented the deterministic historical mission-state repair contract and
+  safe release sequencing used before any repository-wide repair is required.
+
+### Fixed
+
+- Block TeamSpace dry-run/import envelope synthesis when audit findings still
+  contain TeamSpace blockers, so legacy mission-state rows cannot bypass the
+  readiness audit.
+- Reject historical mission-state sync batches with legacy status fields before
+  network submission, preserving the local queue and returning remediation.
+
 ## [3.2.0rc4] - 2026-05-11
 
 3.2.0rc4 tightens the TeamSpace release candidate against the published
