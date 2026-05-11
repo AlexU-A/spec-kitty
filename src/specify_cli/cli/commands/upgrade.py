@@ -49,6 +49,9 @@ from rich.panel import Panel
 from rich.table import Table
 
 from specify_cli.cli.helpers import console, show_banner
+from specify_cli.cli.commands._teamspace_mission_state_gate import (
+    offer_teamspace_mission_state_migration,
+)
 from specify_cli.git.commit_helpers import safe_commit
 
 
@@ -394,7 +397,7 @@ def upgrade(  # noqa: C901
         raise typer.Exit(2)
 
     # T034 — --yes aliases --force (both remain functional)
-    confirm = yes or force
+    confirm = (yes is True) or (force is True)
 
     # T035 — --cli mode: project-agnostic CLI guidance
     if cli:
@@ -533,6 +536,14 @@ def upgrade(  # noqa: C901
                 baseline_paths=baseline_changed_paths,
             )
 
+        if not json_output:
+            offer_teamspace_mission_state_migration(
+                project_path,
+                console=console,
+                dry_run=dry_run,
+                assume_yes=confirm,
+            )
+
         if json_output:
             warnings = [auto_commit_warning] if auto_commit_warning else []
             print(
@@ -620,6 +631,14 @@ def upgrade(  # noqa: C901
             )
             if auto_commit_warning:
                 result.warnings.append(auto_commit_warning)
+
+    if result.success and not json_output:
+        offer_teamspace_mission_state_migration(
+            project_path,
+            console=console,
+            dry_run=dry_run,
+            assume_yes=confirm,
+        )
 
     if json_output:
         # Build detailed migrations array
