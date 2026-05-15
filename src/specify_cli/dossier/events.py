@@ -307,6 +307,14 @@ def _consume_legacy_values(
     return values
 
 
+def _optional_str(value: object) -> str | None:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value
+    return str(value)
+
+
 def _snapshot_legacy_diagnostics(
     *,
     snapshot_id: str,
@@ -361,9 +369,9 @@ def emit_artifact_indexed(
         names=("wp_id", "step_id", "required_status"),
         defaults={"wp_id": None, "step_id": None, "required_status": "optional"},
     )
-    wp_id = legacy["wp_id"]
-    step_id = legacy["step_id"]
-    required_status = legacy["required_status"]
+    wp_id = _optional_str(legacy["wp_id"])
+    step_id = _optional_str(legacy["step_id"])
+    required_status = str(legacy["required_status"])
     ns = _coerce_namespace(namespace, mission_slug=mission_slug, step_id=step_id)
     if ns is None:
         _missing_namespace_log("MissionDossierArtifactIndexed")
@@ -434,7 +442,7 @@ def emit_artifact_missing(
         names=("reason_detail", "blocking"),
         defaults={"reason_detail": None, "blocking": True},
     )
-    reason_detail = legacy["reason_detail"]
+    reason_detail = _optional_str(legacy["reason_detail"])
     blocking = bool(legacy["blocking"])
     if not blocking:
         logger.debug("Skipping non-blocking missing-artifact event for %s", artifact_key)

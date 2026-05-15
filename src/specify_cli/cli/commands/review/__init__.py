@@ -18,7 +18,7 @@ from __future__ import annotations
 import json
 import subprocess  # noqa: F401  (monkeypatched in tests)
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional
 
 import typer
 
@@ -48,7 +48,7 @@ def review_mission(
         typer.Option("--mission", help="Mission handle (id, mid8, or slug)."),
     ] = "",
     mode: Annotated[
-        Optional[str],
+        str | None,
         typer.Option(
             "--mode",
             help=(
@@ -251,7 +251,7 @@ def review_mission(
     # Step 3b — Issue matrix validation (post-merge gate, FR-006, FR-028-032)
     # ==================================================================
     issue_matrix_path = feature_dir / "issue-matrix.md"
-    issue_matrix_present: bool | str
+    issue_matrix_present: bool | Literal["not_applicable"]
 
     if review_mode is MissionReviewMode.POST_MERGE:
         if issue_matrix_path.exists():
@@ -296,7 +296,7 @@ def review_mission(
     # ==================================================================
     mission_exception_path = feature_dir / "mission-exception.md"
     if review_mode is MissionReviewMode.POST_MERGE:
-        mission_exception_present: bool | str = mission_exception_path.exists()
+        mission_exception_present: bool | Literal["not_applicable"] = mission_exception_path.exists()
     else:
         mission_exception_present = "not_applicable"
 

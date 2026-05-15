@@ -362,6 +362,28 @@ class TestSyncServerCommand:
 class TestSyncNowExitCodes:
     """Tests for sync now --strict/--no-strict exit semantics."""
 
+    @pytest.fixture(autouse=True)
+    def _stub_teamspace_gate(self, monkeypatch):
+        """Bypass the M7 ``enforce_teamspace_mission_state_ready`` gate.
+
+        The gate audits the local project root before any sync work, and the
+        spec-kitty checkout's own ``.kittify/`` surfaces TeamSpace blockers
+        that raise ``typer.Exit(1)`` before exit-code semantics can be
+        observed. Tests here exercise the post-gate contract, so the gate is
+        stubbed to a no-op at the call-site in ``sync.py``.
+
+        Mirrors the per-test pattern introduced in commit 80f71fe14
+        (``test_strict_exits_0_on_success``) and lifted here so every
+        exit-code test in this class is shielded.
+        """
+        import specify_cli.cli.commands.sync as sync_mod
+
+        monkeypatch.setattr(
+            sync_mod,
+            "enforce_teamspace_mission_state_ready",
+            lambda **kwargs: None,
+        )
+
     def _make_service(self, queue_size: int, result: MagicMock) -> MagicMock:
         """Build a mock sync service with given queue size and result."""
         svc = MagicMock()
@@ -409,8 +431,28 @@ class TestSyncNowExitCodes:
         assert "saas sync is not enabled" in res.output.lower()
         get_service.assert_not_called()
 
-    def test_strict_exits_0_on_success(self):
-        """Strict mode exits 0 when all events sync successfully."""
+    def test_strict_exits_0_on_success(self, monkeypatch):
+        """Strict mode exits 0 when all events sync successfully.
+
+        M7's ``enforce_teamspace_mission_state_ready`` gate runs an audit
+        against the local project root. In the test environment the spec-kitty
+        checkout's own ``.kittify/`` is visible to the gate, which may surface
+        TeamSpace blockers and raise ``typer.Exit(1)`` before the sync result
+        can be evaluated. Patch the gate to a no-op at the call-site in
+        ``sync.py`` to isolate the success-path contract.
+
+        Mirrors the pattern introduced for ``test_strict_exits_1_on_auth_missing``
+        in PR #1035 (commit bfcaf2043), which patches ``_auth_recovery`` at the
+        import-site in ``sync.py``.
+        """
+        import specify_cli.cli.commands.sync as sync_mod
+
+        monkeypatch.setattr(
+            sync_mod,
+            "enforce_teamspace_mission_state_ready",
+            lambda **kwargs: None,
+        )
+
         result = self._make_result(synced=3)
         svc = self._make_service(queue_size=3, result=result)
 

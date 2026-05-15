@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, UTC
 from pathlib import Path
 from typing import Any, Protocol
 
-import toml  # type: ignore[import-untyped]
+import toml
 
 
 class _BatchEventResultLike(Protocol):
@@ -191,7 +191,10 @@ def _build_legacy_snapshot_payload(
 ) -> dict[str, Any] | None:
     if "snapshot_hash" in payload:
         return None
-    counts = payload.get("artifact_counts") if isinstance(payload.get("artifact_counts"), dict) else {}
+    counts: dict[str, Any] = {}
+    raw_counts = payload.get("artifact_counts")
+    if isinstance(raw_counts, dict):
+        counts = raw_counts
     return {
         "namespace": namespace,
         "snapshot_hash": str(payload.get("parity_hash_sha256") or ""),

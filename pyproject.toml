@@ -1,6 +1,6 @@
 [project]
 name = "spec-kitty-cli"
-version = "3.2.0rc8"
+version = "3.2.0rc9"
 description = "Spec Kitty, a tool for Specification Driven Development (SDD) agentic projects, with kanban and git worktree isolation."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -222,6 +222,12 @@ ignore = [
 "src/specify_cli/cli/commands/agent/config.py" = ["B904"]
 "src/specify_cli/cli/commands/agent/status.py" = ["B904"]
 "src/specify_cli/cli/commands/agent/workflow.py" = ["B904"]
+# F822 false positives: these acceptance-support shims populate their namespace
+# at runtime via ``globals().update(_load_acceptance_api())``; the names in
+# ``__all__`` are real but resolved dynamically and not visible to static
+# analysis. The runtime guarantee is enforced by _load_acceptance_api itself.
+"scripts/tasks/acceptance_support.py" = ["F822"]
+".kittify/overrides/scripts/tasks/acceptance_support.py" = ["F822"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 15  # Match SonarCloud S3776 threshold
@@ -322,6 +328,19 @@ module = [
     "specify_cli.verify_enhanced",
 ]
 ignore_errors = true
+
+[dependency-groups]
+dev = [
+    # Type stubs for dev tooling (mypy --strict gate).
+    # These mirror the entries in [project.optional-dependencies] lint so that
+    # `uv run --with mypy mypy --strict ...` resolves them from the default
+    # environment without requiring `--extra lint`.
+    "types-jsonschema>=4.0.0",
+    "types-psutil>=5.9.0",
+    "types-PyYAML>=6.0",
+    "types-requests>=2.33.0",
+    "types-toml>=0.10.0",
+]
 
 [tool.mutmut]
 paths_to_mutate = [
